@@ -1,0 +1,62 @@
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+html {
+  height: 100%;
+}
+body {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+a:link,
+a:visited {
+    text-decoration: none; /* Supprime le soulignement */
+    color: inherit; /* Utilise la couleur de texte parente */
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin: 0;
+  padding: 0;
+}
+
+.category{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 75px;
+  height: 75px;
+  overflow: hidden; /* Cachez le contenu qui dépasse */
+  text-overflow: ellipsis; /* Ajoutez des points de suspension (...) à la fin du texte qui dépasse */
+  white-space: nowrap; /* Empêchez le texte de passer à la ligne */
+}
+
+.category:hover{
+    background-color: $primary; 
+    & p{
+        color: white;
+    }
+}
+
+.icon-product{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 75px;
+  height: 75px;
+  overflow: hidden; /* Cachez le contenu qui dépasse */
+  text-overflow: ellipsis; /* Ajoutez des points de suspension (...) à la fin du texte qui dépasse */
+}
+
+.edit-product{
+  cursor: pointer;
+}
+.edit-product:hover{
+    color: var(--bs-blue);
+}
