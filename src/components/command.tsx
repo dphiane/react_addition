@@ -23,7 +23,7 @@ export default function Command() {
             return updatedCart;
         });
     };
-    const addToCart = (product: string, quantity: number, price: number) => {
+    const addToCart = (product: string, quantity: number, price: number, tva: number) => {
         setCart((prevCart) => {
             const updatedCart = { ...prevCart };
 
@@ -31,7 +31,7 @@ export default function Command() {
                 updatedCart[ product ].quantity += quantity;
                 updatedCart[ product ].price = price;
             } else {
-                updatedCart[ product ] = { quantity, price };
+                updatedCart[ product ] = { quantity, price , tva};
             }
 
             if (quantity === 0) {
@@ -45,8 +45,8 @@ export default function Command() {
     return (
         <div className="container-fluid vh-100">
             <div className="d-flex h-100">
-                <Cart cart={cart} addToCart={addToCart} updateQuantity={updateCart} initialQuantity={initialQuantity} />
-                <div className="d-flex flex-column justify-content-between bg-secondary-subtle w-75">
+                <Cart cart={cart}  updateQuantity={updateCart} initialQuantity={initialQuantity} />
+                <div className="container-category d-flex flex-column justify-content-between bg-secondary-subtle">
                     <Categories addToCart={addToCart} cart={cart} />
                     <div className="bg-secondary text-light text-center fw-bold p-2">
                         <Link to={'/'}>Menu</Link>

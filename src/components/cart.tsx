@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
+import EditableTitle from './editableTitle';
 
 export interface CartProps {
-  cart: { [ key: string ]: { quantity: number; price: number } };
-  addToCart: (product: string, quantity: number, price: number) => void;
+  cart: { [ key: string ]: { quantity: number; price: number, tva: number } };
   updateQuantity: (product: string, quantity: number, price: number) => void;
   initialQuantity: number;
 }
 export interface CartItemType {
   quantity: number;
   price: number;
+  tva: number
 }
 
-const Cart: React.FC<CartProps> = ({ cart, addToCart, initialQuantity, updateQuantity }) => {
+const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) => {
   const [ showModal, setShowModal ] = useState(false);
   const [ selectedProduct, setSelectedProduct ] = useState<string | null>(null);
   const [ quantity, setQuantity ] = useState(initialQuantity);
@@ -44,7 +45,7 @@ const Cart: React.FC<CartProps> = ({ cart, addToCart, initialQuantity, updateQua
   const handleRemoveProduct = () => {
     if (selectedProduct && cart[ selectedProduct ]) {
       const { quantity, price } = cart[ selectedProduct ];
-      addToCart(selectedProduct, 0, price);
+      updateQuantity(selectedProduct, 0, price);
       handleCloseModal();
     };
   }
@@ -56,28 +57,43 @@ const Cart: React.FC<CartProps> = ({ cart, addToCart, initialQuantity, updateQua
     return totalPrice;
   };
 
+  const calculateTotalTVA = () => {
+    let total = 0;
+    Object.values(cart).forEach(item => {
+      total += item.quantity * (item.price / (1 + item.tva));
+    });
+    return parseFloat(total.toFixed(2));
+  };
+
   return (
-    <div className="d-flex flex-column flex-grow-1">
-      <div className="position-relative">
-        <Link to={'/'}>
-          <i className="fa-solid fa-arrow-left position-absolute"></i>
-        </Link>
-        <h3 className="text-center">Table</h3>
-        <hr />
+    <div className="d-flex flex-column flex-grow-1 justify-content-between">
+      <div className="div">
+
+        <div className="position-relative">
+          <Link to={'/'}>
+            <i className="fa-solid fa-arrow-left position-absolute"></i>
+          </Link>
+          <EditableTitle/>
+          <p className='text-center'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's':''}</p>
+          <hr />
+        </div>
+        <div>
+          <ul>
+            {Object.entries(cart).map(([ product, { quantity, price } ]) => (
+              <li className="edit-product position-relative" key={product} onClick={() => handleOpenModal(product)}>
+              <span className='span-text'>{quantity} x {product} </span><span className="position-absolute end-0 me-2">{price * quantity} €</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div>
-        <ul>
-          {Object.entries(cart).map(([ product, { quantity, price } ]) => (
-            <li className="edit-product position-relative" key={product} onClick={() => handleOpenModal(product)}>
-              {product} x {quantity} <span className="position-absolute end-0 me-2">{price * quantity} €</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className='position-relative'>Total TVA <span className='position-absolute end-0 me-2'>{calculateTotalPrice()} €</span></div>
-      <div className='fw-bold position-relative'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice()} €</span></div>
-      <div className="bg-primary text-light text-center fw-bold p-2">
-        <Link to="/paid">Payer</Link>
+      <div >
+        <p className='position-relative m-0'>TVA <span className='position-absolute end-0 me-2'>{calculateTotalTVA()} €</span></p>
+        <p className='position-relative m-0'>Total HT <span className='position-absolute end-0 me-2'>{(calculateTotalPrice() - calculateTotalTVA()).toFixed(2)} €</span></p>
+        <p className='fw-bold position-relative m-0'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice()} €</span></p>
+        <div className="bg-primary text-light text-center fw-bold p-2">
+          <Link to="/paid">Payer</Link>
+        </div>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>

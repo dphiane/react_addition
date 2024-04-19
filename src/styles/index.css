@@ -11965,6 +11965,10 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+* {
+  box-sizing: border-box;
+}
+
 html {
   height: 100%;
 }
@@ -11993,14 +11997,16 @@ li {
 }
 
 .category {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 75px;
+  min-width: 75px;
   height: 75px;
-  overflow: hidden; /* Cachez le contenu qui dépasse */
-  text-overflow: ellipsis; /* Ajoutez des points de suspension (...) à la fin du texte qui dépasse */
-  white-space: nowrap; /* Empêchez le texte de passer à la ligne */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.category p {
+  width: 75px;
+  word-wrap: break-word;
 }
 
 .category:hover {
@@ -12011,13 +12017,17 @@ li {
 }
 
 .icon-product {
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 75px;
-  height: 75px;
-  overflow: hidden; /* Cachez le contenu qui dépasse */
-  text-overflow: ellipsis; /* Ajoutez des points de suspension (...) à la fin du texte qui dépasse */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.icon-product:hover {
+  background-color: #0d6efd;
+  color: white;
+  transition: background-color 0.5s ease-in-out;
 }
 
 .edit-product {
@@ -12026,4 +12036,21 @@ li {
 
 .edit-product:hover {
   color: var(--bs-blue);
+}
+
+.container-category {
+  width: 60%;
+}
+
+@media (max-width: 576px) {
+  .container-category {
+    width: 40%;
+  }
+  .span-text {
+    display: inline-block;
+    width: 160px;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    overflow: hidden; /* Cache le texte qui dépasse */
+    text-overflow: ellipsis; /* Affiche une ellipse (...) pour indiquer le texte coupé */
+  }
 }/*# sourceMappingURL=index.css.map */

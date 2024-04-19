@@ -1,5 +1,7 @@
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
-
+*{
+  box-sizing: border-box;
+}
 html {
   height: 100%;
 }
@@ -27,14 +29,16 @@ li {
 }
 
 .category{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 75px;
+  min-width: 75px;
   height: 75px;
-  overflow: hidden; /* Cachez le contenu qui dépasse */
-  text-overflow: ellipsis; /* Ajoutez des points de suspension (...) à la fin du texte qui dépasse */
-  white-space: nowrap; /* Empêchez le texte de passer à la ligne */
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  p{
+    width: 75px;
+    word-wrap: break-word;
+  }
 }
 
 .category:hover{
@@ -45,18 +49,40 @@ li {
 }
 
 .icon-product{
+  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 75px;
-  height: 75px;
-  overflow: hidden; /* Cachez le contenu qui dépasse */
-  text-overflow: ellipsis; /* Ajoutez des points de suspension (...) à la fin du texte qui dépasse */
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  &:hover{
+    background-color: $primary;
+    color: white;
+    transition: background-color 0.5s ease-in-out;
+  }
 }
 
 .edit-product{
   cursor: pointer;
 }
+
 .edit-product:hover{
     color: var(--bs-blue);
+}
+
+.container-category{
+  width: 60%;
+}
+@media (max-width: 576px) {
+  // Add your styles specific to smaller devices here
+  .container-category{
+    width: 40%;
+  }
+  .span-text {
+    display: inline-block;
+    width: 160px;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    overflow: hidden; /* Cache le texte qui dépasse */
+    text-overflow: ellipsis; /* Affiche une ellipse (...) pour indiquer le texte coupé */
+  }
 }
