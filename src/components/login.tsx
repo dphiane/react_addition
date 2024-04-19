@@ -1,18 +1,19 @@
-import { useState } from "react";
+import React, { useState, FormEvent } from "react";
 import axios from "axios";
-import Image from "../assets/caisse-restaurant.png";
 import { Link } from "react-router-dom";
+// @ts-ignore
+import Image from "../assets/caisse-restaurant.png";
 
 function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
       // Appel à l'API pour authentifier l'utilisateur et obtenir le token JWT
-      const response = await axios.post("http://example.com/api/login", {
+      const response = await axios.post<{ token: string }>("http://example.com/api/login", {
         email: email,
         password: password,
       });
@@ -69,7 +70,9 @@ function LoginForm() {
           <button type="submit" className="btn btn-primary">
             Se connecter
           </button>
-          <small className="ms-2"><Link to={'/forgot-password'}>Mot de passe oublié ?</Link></small>
+          <small className="ms-2">
+            <Link to={'/forgot-password'}>Mot de passe oublié ?</Link>
+          </small>
         </form>
       </div>
     </div>
