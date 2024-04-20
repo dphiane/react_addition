@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import EditableTitle from './editableTitle';
+import Menu from './menu';
 
 export interface CartProps {
   cart: { [ key: string ]: { quantity: number; price: number, tva: number } };
@@ -67,21 +67,17 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) =>
 
   return (
     <div className="d-flex flex-column flex-grow-1 justify-content-between">
-      <div className="div">
-
-        <div className="position-relative">
-          <Link to={'/'}>
-            <i className="fa-solid fa-arrow-left position-absolute"></i>
-          </Link>
-          <EditableTitle/>
-          <p className='text-center'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's':''}</p>
+      <div>
+        <div className='d-flex flex-column'>
+        <Menu></Menu> 
+          <p className='text-center'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's' : ''}</p>
           <hr />
         </div>
         <div>
           <ul>
             {Object.entries(cart).map(([ product, { quantity, price } ]) => (
               <li className="edit-product position-relative" key={product} onClick={() => handleOpenModal(product)}>
-              <span className='span-text'>{quantity} x {product} </span><span className="position-absolute end-0 me-2">{price * quantity} €</span>
+                <span className='span-text'>{quantity} x {product} </span><span className="position-absolute end-0 me-2">{price * quantity} €</span>
               </li>
             ))}
           </ul>
@@ -104,6 +100,7 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) =>
           <p className="text-center">
             Quantité:
             <input
+              className='text-center'
               type="number"
               value={quantity}
               onChange={(e) => {
@@ -130,6 +127,5 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) =>
     </div>
   );
 };
-
 
 export default Cart;
