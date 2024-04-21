@@ -1,23 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import Menu from './menu';
 
 export interface CartProps {
-  cart: { [ key: string ]: { quantity: number; price: number, tva: number } };
+  cart: { [ key: string ]: { quantity: number; price: number; tva: number } };
   updateQuantity: (product: string, quantity: number, price: number) => void;
   initialQuantity: number;
+  onTableSelect: (selectedTable: number | null) => void
 }
+
 export interface CartItemType {
   quantity: number;
   price: number;
   tva: number
 }
 
-const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) => {
+const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTableSelect }) => {
   const [ showModal, setShowModal ] = useState(false);
   const [ selectedProduct, setSelectedProduct ] = useState<string | null>(null);
   const [ quantity, setQuantity ] = useState(initialQuantity);
+  const [selectedTable, setSelectedTable] = useState<number | null>(() => {
+    const storedTable = localStorage.getItem('selectTable');
+    return storedTable ? parseInt(storedTable.split("_")[1]) : 1
+});
+
+  useEffect(() => {
+    onTableSelect(selectedTable)
+  }, [ selectedTable , onTableSelect ]);
+
+  useEffect(() => {
+    onTableSelect(selectedTable);
+  }, [ selectedTable, onTableSelect ]);
+
+  const handleTableSelect = (tableNumber: number) => {
+    localStorage.setItem(`cart_${selectedTable}`, JSON.stringify(cart));
+    setSelectedTable(tableNumber + 1);
+    localStorage.setItem('selectTable', `cart_${tableNumber + 1}`)
+  }
 
   const handleOpenModal = (product: string) => {
     setSelectedProduct(product);
@@ -40,15 +60,16 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) =>
       updateQuantity(selectedProduct, quantity, price);
       handleCloseModal();
     }
-  }
+  };
 
   const handleRemoveProduct = () => {
     if (selectedProduct && cart[ selectedProduct ]) {
-      const { quantity, price } = cart[ selectedProduct ];
+      const { price } = cart[ selectedProduct ];
       updateQuantity(selectedProduct, 0, price);
       handleCloseModal();
-    };
-  }
+    }
+  };
+
   const calculateTotalPrice = () => {
     let totalPrice = 0;
     Object.values(cart).forEach(item => {
@@ -69,7 +90,7 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) =>
     <div className="d-flex flex-column flex-grow-1 justify-content-between">
       <div>
         <div className='d-flex flex-column'>
-        <Menu></Menu> 
+          <Menu onTableSelect={handleTableSelect} />
           <p className='text-center'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's' : ''}</p>
           <hr />
         </div>
@@ -83,7 +104,7 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity }) =>
           </ul>
         </div>
       </div>
-      <div >
+      <div>
         <p className='position-relative m-0'>TVA <span className='position-absolute end-0 me-2'>{calculateTotalTVA()} €</span></p>
         <p className='position-relative m-0'>Total HT <span className='position-absolute end-0 me-2'>{(calculateTotalPrice() - calculateTotalTVA()).toFixed(2)} €</span></p>
         <p className='fw-bold position-relative m-0'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice()} €</span></p>

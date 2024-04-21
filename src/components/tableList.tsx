@@ -4,7 +4,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 interface Table {
     name: string;
     columns: string[];
-    data: { [key: string]: string }[];
+    data: { [ key: string ]: string }[];
 }
 
 interface TableListProps {
@@ -12,25 +12,33 @@ interface TableListProps {
     onTableSelect: (index: number) => void;
 }
 
-const ucFirst = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
 const TableList: React.FC<TableListProps> = ({ tables, onTableSelect }) => {
-
+    const [tableSelected, setSelectedTable] = useState<number | null>(() => {
+        const storedTable = localStorage.getItem('selectTable');
+        return storedTable ? parseInt(storedTable.split("_")[1]) : 1;
+    });
+    const ucFirst = (str: string) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+    const handleTableSelect = (index: number) => {
+        setSelectedTable(index + 1)
+    }
     return (
-        <Dropdown>
-            <Dropdown.Toggle className="w-100 rounded-0">
-                <i className="fa-solid fa-list"></i> Liste des tables 
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-                {tables.map((table, index) => (
-                    <Dropdown.Item key={index} onClick={() => onTableSelect(index)}>
-                        {ucFirst(table.name)}
-                    </Dropdown.Item>
-                ))}
-            </Dropdown.Menu>
-        </Dropdown>
+        <div>
+            <Dropdown>
+                <Dropdown.Toggle className="w-100 rounded-0">
+                    <i className="fa-solid fa-list"></i> Liste des tables
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="w-100">
+                    {tables.map((table, index) => (
+                        <Dropdown.Item className="text-center" key={index} onClick={() => { onTableSelect(index); handleTableSelect(index) }}>
+                            {ucFirst(table.name)}
+                        </Dropdown.Item>
+                    ))}
+                </Dropdown.Menu>
+            </Dropdown>
+            <h2 className="text-center">Table n°{tableSelected}</h2>
+        </div>
     );
 };
 

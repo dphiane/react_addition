@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Carts, { CartItemType } from './carts';
 import Categories from './category';
 
 export default function Command() {
     const [ cart, setCart ] = useState<{ [ key: string ]: CartItemType }>({});
+    const [selectedTable, setSelectedTable] = useState<number | null>(null);
     const initialQuantity: number = 1;
+
+    const handleTableSelect = (tableNumber: number | null) => {
+        setSelectedTable(tableNumber);
+    };
+    
+    useEffect(() => {
+        if (selectedTable !== null) {
+            const cartFromLocalStorage = localStorage.getItem(`cart_${selectedTable}`);
+            if (cartFromLocalStorage) {
+                setCart(JSON.parse(cartFromLocalStorage));
+            } else {
+                setCart({});
+            }
+        }
+    }, [selectedTable]);
 
     const updateCart = (product: string, quantity: number, price: number) => {
         setCart((prevCart) => {
@@ -37,7 +53,6 @@ export default function Command() {
             if (quantity === 0) {
                 delete updatedCart[ product ];
             }
-
             return updatedCart;
         });
     };
@@ -45,7 +60,7 @@ export default function Command() {
     return (
         <div className="container-fluid vh-100">
             <div className="d-flex h-100">
-                    <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} />
+                    <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} onTableSelect={handleTableSelect} />
                 <div className="container-category d-flex flex-column justify-content-between bg-secondary-subtle">
                     <Categories addToCart={addToCart} cart={cart} />
                     <div className="bg-secondary text-light text-center fw-bold p-2">
