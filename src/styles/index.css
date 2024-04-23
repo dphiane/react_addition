@@ -12053,4 +12053,17 @@ li {
     overflow: hidden; /* Cache le texte qui dépasse */
     text-overflow: ellipsis; /* Affiche une ellipse (...) pour indiquer le texte coupé */
   }
+}
+.calculator-case {
+  width: 75px;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-case {
+  width: 100%;
+  border-right: 1px;
+  padding: 20px;
 }/*# sourceMappingURL=index.css.map */

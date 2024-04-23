@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import Menu from './menu';
+import { calculateTotalPrice , calculateTotalTVA } from '../functions/cart';
 
 export interface CartProps {
   cart: { [ key: string ]: { quantity: number; price: number; tva: number } };
@@ -16,7 +17,7 @@ export interface CartItemType {
   tva: number
 }
 
-const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTableSelect }) => {
+const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTableSelect }) => {
   const [ showModal, setShowModal ] = useState(false);
   const [ selectedProduct, setSelectedProduct ] = useState<string | null>(null);
   const [ quantity, setQuantity ] = useState(initialQuantity);
@@ -70,21 +71,6 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTa
     }
   };
 
-  const calculateTotalPrice = () => {
-    let totalPrice = 0;
-    Object.values(cart).forEach(item => {
-      totalPrice += item.quantity * item.price;
-    });
-    return totalPrice;
-  };
-
-  const calculateTotalTVA = () => {
-    let total = 0;
-    Object.values(cart).forEach(item => {
-      total += item.quantity * (item.price / (1 + item.tva));
-    });
-    return parseFloat(total.toFixed(2));
-  };
 
   return (
     <div className="d-flex flex-column flex-grow-1 justify-content-between">
@@ -105,11 +91,11 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTa
         </div>
       </div>
       <div>
-        <p className='position-relative m-0'>TVA <span className='position-absolute end-0 me-2'>{calculateTotalTVA()} €</span></p>
-        <p className='position-relative m-0'>Total HT <span className='position-absolute end-0 me-2'>{(calculateTotalPrice() - calculateTotalTVA()).toFixed(2)} €</span></p>
-        <p className='fw-bold position-relative m-0'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice()} €</span></p>
+        <p className='position-relative m-0'>TVA <span className='position-absolute end-0 me-2'>{calculateTotalTVA(cart)} €</span></p>
+        <p className='position-relative m-0'>Total HT <span className='position-absolute end-0 me-2'>{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span></p>
+        <p className='fw-bold position-relative m-0'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice(cart)} €</span></p>
         <div className="bg-primary text-light text-center fw-bold p-2">
-          <Link to="/paid">Payer</Link>
+          <Link to="/payment">Payer</Link>
         </div>
       </div>
 
@@ -149,4 +135,4 @@ const Cart: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTa
   );
 };
 
-export default Cart;
+export default Carts;
