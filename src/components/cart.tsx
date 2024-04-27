@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { calculateTotalPrice, calculateTotalTVA } from "../functions/cart";
 
@@ -7,11 +7,16 @@ interface CartItem {
   quantity: number;
   price: number;
 }
+interface paymentProps {
+  remainder: number
+  totalCart: (totalCart: number) => void
+  payments: { amount: number, paymentMethod: string }[];
+}
 
-const Cart = () => {
+const Cart = ({ remainder, totalCart, payments }: paymentProps) => {
+
   const selectTable = localStorage.getItem("selectTable");
-  let cart: { [key: string]: CartItem } = {}; // Define type for cart object
-
+  let cart: { [ key: string ]: CartItem } = {};
   if (selectTable) {
     const cartData = localStorage.getItem(selectTable);
     if (cartData) {
@@ -19,13 +24,17 @@ const Cart = () => {
     }
   }
 
+  useEffect(() => {
+    totalCart(calculateTotalPrice(cart))
+  })
+
   return (
     <>
       {selectTable && Object.keys(cart).length > 0 ? (
         <div className="d-flex flex-column flex-grow-1 justify-content-between border-end">
           <div>
             <div className="d-flex flex-column">
-                <p className="fw-bold">Table {parseInt(selectTable.split("_")[1])}</p>
+              <p className="fw-bold text-center mb-0">Table {parseInt(selectTable.split("_")[ 1 ])}</p>
               <p className="text-center">
                 {Object.keys(cart).length} article
                 {Object.keys(cart).length > 1 ? "s" : ""}
@@ -34,7 +43,7 @@ const Cart = () => {
             </div>
             <div>
               <ul>
-                {Object.entries(cart).map(([product, { quantity, price }]) => (
+                {Object.entries(cart).map(([ product, { quantity, price } ]) => (
                   <li className="edit-product position-relative" key={product}>
                     <span className="span-text">{quantity} x {product}</span>
                     <span className="position-absolute end-0 me-2">{price * quantity} €</span>
@@ -53,13 +62,29 @@ const Cart = () => {
             <p className="fw-bold position-relative m-0">
               Total <span className="position-absolute end-0 me-2">{calculateTotalPrice(cart)} €</span>
             </p>
-            <div className="bg-primary text-light text-center fw-bold p-2">
+            <ul>
+              {payments.map((payment, index) => (
+                <li key={index} >
+                Paiement: {payment.amount}€ en {payment.paymentMethod}
+                </li>
+              ))}
+            </ul>
+            <p className="fw-bold position-relative m-0">
+              Reste à payer <span className="position-absolute end-0 me-2">{remainder} €</span>
+            </p>
+            <button className="bg-primary text-light text-center fw-bold p-2 w-100 border-0">
               <Link to="/">Retour</Link>
-            </div>
+            </button>
           </div>
         </div>
       ) : (
-        <h1>La table est vide</h1>
+        <div className="d-flex flex-column flex-grow-1 justify-content-between border-end">
+
+          <h1 className="text-center mt-5">La table est vide</h1>
+          <button className="bg-primary text-light text-center fw-bold p-2 w-100 border-0">
+            <Link to="/">Retour</Link>
+          </button>
+        </div>
       )}
     </>
   );

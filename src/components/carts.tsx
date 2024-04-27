@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import Menu from './menu';
+import TableSelection from './tableSelection';
 import { calculateTotalPrice , calculateTotalTVA } from '../functions/cart';
 
 export interface CartProps {
@@ -71,12 +71,16 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
     }
   };
 
+  const handleSaveCart= () =>{
+    localStorage.setItem(`cart_${selectedTable}`, JSON.stringify(cart));
+  }
+
 
   return (
     <div className="d-flex flex-column flex-grow-1 justify-content-between">
       <div>
         <div className='d-flex flex-column'>
-          <Menu onTableSelect={handleTableSelect} />
+          <TableSelection onTableSelect={handleTableSelect} />
           <p className='text-center'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's' : ''}</p>
           <hr />
         </div>
@@ -94,9 +98,9 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
         <p className='position-relative m-0'>TVA <span className='position-absolute end-0 me-2'>{calculateTotalTVA(cart)} €</span></p>
         <p className='position-relative m-0'>Total HT <span className='position-absolute end-0 me-2'>{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span></p>
         <p className='fw-bold position-relative m-0'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice(cart)} €</span></p>
-        <div className="bg-primary text-light text-center fw-bold p-2">
+        <button className="bg-primary text-light text-center fw-bold p-2 w-100 border-0" onClick={handleSaveCart}>
           <Link to="/payment">Payer</Link>
-        </div>
+        </button>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>

@@ -7,7 +7,8 @@ html {
 }
 body {
   height: 100vh;
-  margin: 0;
+  max-width: 992px;
+  margin: auto;
   padding: 0;
 }
 
@@ -98,5 +99,24 @@ justify-content: center;
 .payment-case{
   width: 100%;
   border-right: 1px;
-  padding: 20px;
+  padding: 10px;
+}
+
+.fa-credit-card{
+  color: $primary;
+}
+.fa-money-bill{
+  color: $green;
+}
+
+.fa-money-check{
+  color:  $secondary ;
+}
+
+.fa-ticket{
+  color: $orange;
+}
+
+.calculator-case{
+  cursor: pointer;
 }

@@ -73,7 +73,7 @@ const Category: React.FC<CategoryProps> = ({ addToCart, cart }) => {
       key={index}
       onClick={() => handleOpenModal(category)}
     >
-      <p className='m-0 text-center'>{category}</p>
+      <button className='btn fw-bold text-center'>{category}</button>
     </div>
   ));
 

@@ -11975,7 +11975,8 @@ html {
 
 body {
   height: 100vh;
-  margin: 0;
+  max-width: 992px;
+  margin: auto;
   padding: 0;
 }
 
@@ -12065,5 +12066,25 @@ li {
 .payment-case {
   width: 100%;
   border-right: 1px;
-  padding: 20px;
+  padding: 10px;
+}
+
+.fa-credit-card {
+  color: #0d6efd;
+}
+
+.fa-money-bill {
+  color: #198754;
+}
+
+.fa-money-check {
+  color: #6c757d;
+}
+
+.fa-ticket {
+  color: #fd7e14;
+}
+
+.calculator-case {
+  cursor: pointer;
 }/*# sourceMappingURL=index.css.map */

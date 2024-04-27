@@ -6,7 +6,7 @@ export interface MenuProps {
   onTableSelect: (tableNumber: number) => void;
 }
 
-const Menu: React.FC<MenuProps> = ({ onTableSelect }) => {
+const TableSelection: React.FC<MenuProps> = ({ onTableSelect }) => {
 
   const handleTableSelect = (index: number) => {
     onTableSelect(index);
@@ -18,4 +18,4 @@ const Menu: React.FC<MenuProps> = ({ onTableSelect }) => {
     </div>
   );
 }
-export default Menu;
+export default TableSelection;
