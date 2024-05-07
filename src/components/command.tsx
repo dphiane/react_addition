@@ -58,13 +58,13 @@ export default function Command() {
     };
 
     return (
-        <div className="container-fluid vh-100">
+        <div className="vh-100">
             <div className="d-flex h-100">
                     <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} onTableSelect={handleTableSelect} />
-                <div className="container-category d-flex flex-column justify-content-between bg-secondary-subtle">
+                <div className="container-category  border-start d-flex flex-column justify-content-between bg-dark">
                     <Categories addToCart={addToCart} cart={cart} />
-                    <div className="bg-secondary text-light text-center fw-bold p-2">
-                        <Link to={'/'}>Menu</Link>
+                    <div className="bg-dark border-top text-light text-center fw-bold p-2">
+                        <Link to={'/settings'}>Options</Link>
                     </div>
                 </div>
             </div>

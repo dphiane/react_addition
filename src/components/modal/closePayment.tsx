@@ -11,22 +11,22 @@ interface PaymentModalProps {
 
 const closePayment = ({ show, onHide ,payments, totalCart }: PaymentModalProps) => {
     const selectTable = localStorage.getItem("selectTable");
+    const tableNumber = selectTable !== null ? selectTable[selectTable.length-1] : undefined;
     const navigate = useNavigate();
 
     const handleCloseModal=()=>{
         onHide()
-        console.log(selectTable)
         if(selectTable){
             localStorage.removeItem(selectTable)
         }
         navigate("/plan");    
     }
     return (
-        <Modal show={show} onHide={handleCloseModal}>
-            <Modal.Header closeButton>
-                <Modal.Title>Table {selectTable} </Modal.Title>
+        <Modal show={show} onHide={handleCloseModal} >
+            <Modal.Header  closeVariant="white" closeButton className='bg-dark'>
+                <Modal.Title>Table {tableNumber} </Modal.Title>
             </Modal.Header>
-            <Modal.Body className='d-flex justify-content-center flex-column align-items-center'>
+            <Modal.Body className='bg-dark d-flex justify-content-center flex-column align-items-center'>
             <span className='fw-bold m-2'>Paiement</span>
                 <ul>
               {payments.map((payment, index) => (
@@ -37,7 +37,7 @@ const closePayment = ({ show, onHide ,payments, totalCart }: PaymentModalProps) 
             </ul>
             
             </Modal.Body>
-            <Modal.Footer className='d-flex justify-content-between'>
+            <Modal.Footer className='bg-dark d-flex justify-content-between'>
                 <div>
             <p className='fw-bold m-1'>Total: {totalCart}€</p>
                 </div>

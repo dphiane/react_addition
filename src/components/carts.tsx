@@ -5,7 +5,7 @@ import TableSelection from './tableSelection';
 import { calculateTotalPrice , calculateTotalTVA } from '../functions/cart';
 
 export interface CartProps {
-  cart: { [ key: string ]: { quantity: number; price: number; tva: number } };
+  cart: { [ key: string ]: { quantity: number; price: number; tva: number, comment?: string; } };
   updateQuantity: (product: string, quantity: number, price: number) => void;
   initialQuantity: number;
   onTableSelect: (selectedTable: number | null) => void
@@ -77,7 +77,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
 
 
   return (
-    <div className="d-flex flex-column flex-grow-1 justify-content-between">
+    <div className="d-flex flex-column flex-grow-1 justify-content-between bg-dark">
       <div>
         <div className='d-flex flex-column'>
           <TableSelection onTableSelect={handleTableSelect} />
@@ -86,28 +86,32 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
         </div>
         <div>
           <ul>
-            {Object.entries(cart).map(([ product, { quantity, price } ]) => (
-              <li className="edit-product position-relative" key={product} onClick={() => handleOpenModal(product)}>
-                <span className='span-text'>{quantity} x {product} </span><span className="position-absolute end-0 me-2">{price * quantity} €</span>
+            {Object.entries(cart).map(([ product, { quantity, price , comment } ]) => (
+              <li className="edit-product position-relative m-1" key={product} onClick={() => handleOpenModal(product)}>
+                <span className='span-text'>{quantity} x {product} </span>
+                <span className="position-absolute end-0 me-2">{price * quantity} €</span>
               </li>
             ))}
-          </ul>
+            </ul>
         </div>
       </div>
       <div>
-        <p className='position-relative m-0'>TVA <span className='position-absolute end-0 me-2'>{calculateTotalTVA(cart)} €</span></p>
-        <p className='position-relative m-0'>Total HT <span className='position-absolute end-0 me-2'>{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span></p>
-        <p className='fw-bold position-relative m-0'>Total <span className='position-absolute end-0 me-2'>{calculateTotalPrice(cart)} €</span></p>
+        <p className='position-relative m-1'>TVA 
+          <span className='position-absolute end-0 me-2'>{calculateTotalTVA(cart)} €</span></p>
+        <p className='position-relative m-1'>Total HT 
+          <span className='position-absolute end-0 me-2'>{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span></p>
+        <p className='fw-bold position-relative m-1'>Total 
+          <span className='position-absolute end-0 me-2'>{calculateTotalPrice(cart)} €</span></p>
         <button className="bg-primary text-light text-center fw-bold p-2 w-100 border-0" onClick={handleSaveCart}>
           <Link to="/payment">Payer</Link>
         </button>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
+        <Modal.Header closeVariant='white' closeButton className='bg-dark'>
           <Modal.Title>{selectedProduct}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className='bg-dark'>
           <p className="text-center">
             Quantité:
             <input
@@ -123,7 +127,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
             />
           </p>
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className='bg-dark'>
           <Button variant="secondary" onClick={handleCloseModal}>
             Annuler
           </Button>

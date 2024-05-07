@@ -1,4 +1,9 @@
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "~bootstrap/scss/bootstrap";
+
+$dark:#16191B;
+$white:#FFFFFF;
+$lightBlue:#5F9EE6;
+
 *{
   box-sizing: border-box;
 }
@@ -98,8 +103,8 @@ justify-content: center;
 
 .payment-case{
   width: 100%;
-  border-right: 1px;
   padding: 10px;
+  margin: 10px;
 }
 
 .fa-credit-card{
@@ -119,4 +124,39 @@ justify-content: center;
 
 .calculator-case{
   cursor: pointer;
+  color: white;
+  font-weight: 600;
+}
+
+.bg-light-blue{
+  background-color: $lightBlue;
+}
+.light-blue{
+  color:$lightBlue;
+}
+
+.bg-dark{
+  background-color: $dark;
+  color: white;
+}
+
+.comma{
+  width: 20%;
+}
+
+.custom-tabs .nav-link {
+  background-color: $secondary; /* Couleur de fond personnalisée */
+  color: white;
+  border: 1px solid white; /* Couleur du texte personnalisée */
+}
+
+.custom-tabs .nav-link.active {
+  background-color: $primary; /* Couleur de fond personnalisée pour l'onglet actif */
+  color: $white; /* Couleur du texte personnalisée pour l'onglet actif */
+}
+
+.nav-selected{
+  text-decoration: underline $primary;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
 }

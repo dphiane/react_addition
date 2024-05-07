@@ -19,7 +19,7 @@ const SeatingPlan = () => {
     };
 
     return (
-        <div>
+        <div className='bg-dark'>
             <h1 className='text-center m-5'>Selectionner une table</h1>
             <div className='d-flex justify-content-center flex-wrap'>
                 {tables.tables.map((table, index) => (

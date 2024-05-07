@@ -29,7 +29,7 @@ const TableList: React.FC<TableListProps> = ({ tables, onTableSelect }) => {
                 <Dropdown.Toggle className="w-100 rounded-0">
                     <i className="fa-solid fa-list"></i> Liste des tables
                 </Dropdown.Toggle>
-                <Dropdown.Menu className="w-100">
+                <Dropdown.Menu className="w-100 bg-dark">
                     {tables.map((table, index) => (
                         <Dropdown.Item className="text-center" key={index} onClick={() => { onTableSelect(index); handleTableSelect(index) }}>
                             {ucFirst(table.name)}

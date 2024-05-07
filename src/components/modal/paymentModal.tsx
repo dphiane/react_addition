@@ -9,13 +9,13 @@ interface PaymentModalProps {
 const PaymentModal = ({ show, onHide }:PaymentModalProps) => {
   return (
     <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
+      <Modal.Header closeButton className='bg-dark'>
         <Modal.Title>Erreur de paiement</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className='bg-dark'>
         Le montant à payer est supérieur au reste à payer. Veuillez saisir un montant valide.
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className='bg-dark'>
         <Button variant="secondary" onClick={onHide}>
           Fermer
         </Button>

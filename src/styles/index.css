@@ -12065,8 +12065,8 @@ li {
 
 .payment-case {
   width: 100%;
-  border-right: 1px;
   padding: 10px;
+  margin: 10px;
 }
 
 .fa-credit-card {
@@ -12087,4 +12087,41 @@ li {
 
 .calculator-case {
   cursor: pointer;
+  color: white;
+  font-weight: 600;
+}
+
+.bg-light-blue {
+  background-color: #5F9EE6;
+}
+
+.light-blue {
+  color: #5F9EE6;
+}
+
+.bg-dark {
+  background-color: #16191B;
+  color: white;
+}
+
+.comma {
+  width: 20%;
+}
+
+.custom-tabs .nav-link {
+  background-color: #6c757d; /* Couleur de fond personnalisée */
+  color: white;
+  border: 1px solid white; /* Couleur du texte personnalisée */
+}
+
+.custom-tabs .nav-link.active {
+  background-color: #0d6efd; /* Couleur de fond personnalisée pour l'onglet actif */
+  color: #FFFFFF; /* Couleur du texte personnalisée pour l'onglet actif */
+}
+
+.nav-selected {
+  -webkit-text-decoration: underline #0d6efd;
+          text-decoration: underline #0d6efd;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
 }/*# sourceMappingURL=index.css.map */

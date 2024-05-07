@@ -13,7 +13,7 @@ const TableSelection: React.FC<MenuProps> = ({ onTableSelect }) => {
   };
 
   return (
-    <div className='d-flex flex-column mt-2'>
+    <div className='d-flex flex-column mt-2 bg-dark'>
       <TableList tables={tables.tables} onTableSelect={handleTableSelect} />
     </div>
   );

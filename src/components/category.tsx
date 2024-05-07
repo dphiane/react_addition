@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
 interface Product {
   name: string;
   price: number;
-  tva: number
+  tva: number;
 }
-
 interface CartItemType {
-  quantity: number;
-  price: number;
-  tva: number
-}
-
+    quantity: number;
+    price: number;
+    tva: number
+  }
 interface CategoryProps {
   addToCart: (name: string, quantity: number, price: number, tva: number) => void;
   cart: { [ key: string ]: CartItemType };
 }
-const productsByCategory: { [ key: string ]: Product[] } = {
+
+const productsByCategory: { [key: string]: Product[] } = {
   Entrée: [
     { name: 'Salade', price: 5.00, tva: 10 },
     { name: 'Soupe', price: 4.00, tva: 10 },
@@ -38,73 +37,45 @@ const productsByCategory: { [ key: string ]: Product[] } = {
     { name: 'Coca-Cola', price: 3.50, tva: 10 },
     { name: 'Vin rouge', price: 12.00, tva: 20 },
   ],
-  Vin: [
-
-  ],
-  Boisson_Chaude: [
-
-  ],
-
-
+  Vin: [],
+  Boisson_Chaude: [],
 };
 
-const Category: React.FC<CategoryProps> = ({ addToCart, cart }) => {
-  const [ showModal, setShowModal ] = useState(false);
-  const [ selectedCategory, setSelectedCategory ] = useState<string | null>(null);
+const Category: React.FC<CategoryProps> = ({ addToCart, cart  }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleOpenModal = (category: string) => {
+  const handleOpenCategory = (category: string) => {
     setSelectedCategory(category);
-    setShowModal(true);
   };
 
   const handleProductSelection = (product: Product) => {
     addToCart(product.name, 1, product.price, product.tva);
-    handleCloseModal();
   };
 
-
-  const categoryList = Object.keys(productsByCategory).map((category, index) => (
-    <div
-      className={`category m-3 border border-2 border-primary fw-bold rounded  ${category.length > 10 ? 'justify-content-start' : 'justify-content-center'}`}
-      key={index}
-      onClick={() => handleOpenModal(category)}
-    >
-      <button className='btn fw-bold text-center'>{category}</button>
-    </div>
-  ));
-
   return (
-    <div className="container-fluid d-flex flex-wrap justify-content-center justify-content-sm-start">
-      {categoryList}
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedCategory}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedCategory && (
-            <div className="d-flex flex-column">
-              {productsByCategory[ selectedCategory ].map((product, index) => (
-                <li
-                  className="icon-product m-2 fw-bold"
-                  key={index}
-                  onClick={() => handleProductSelection(product)}
-                >
-                  {product.name}
+    <div className="container-fluid d-flex bg-dark p-3">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark flex-column">
+        <div className="container-fluid">
+            <ul className="navbar-nav flex-column">
+              {Object.keys(productsByCategory).map((category, index) => (
+                <li key={index} className={`nav-item fw-bold ${selectedCategory === category ? 'nav-selected' : ''}`}>
+                  <button className="nav-link bg-dark border-0 text-white" onClick={() => handleOpenCategory(category)}>{category}</button>
                 </li>
+              ))}
+            </ul>
+        </div>
+      </nav>
+      <div className="row mt-3">
+        <div className="col">
+          {selectedCategory && (
+            <div className="d-flex flex-wrap">
+              {productsByCategory[selectedCategory].map((product, index) => (
+                    <Button key={index} className='m-2' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
               ))}
             </div>
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Fermer
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        </div>
+      </div>
     </div>
   );
 };
