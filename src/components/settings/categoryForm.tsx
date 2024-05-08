@@ -26,24 +26,29 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onSubmit,
 
   const handleCloseFormModal = () => {
     setShowFormModal(false);
-    setCategoryName('');
   };
 
-  const handleCloseConfirmationModal = () => setShowConfirmationModal(false);
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    setCategoryName('');
+  }
 
   const handleShowFormModal = () => setShowFormModal(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log(categoryName)
     if (categoryName.trim() !== '') {
       if (categoryToUpdate) {
         // Si une catégorie est mise à jour, appeler la fonction onSubmit
         onSubmit(categoryName);
         handleCloseFormModal();
+        setShowConfirmationModal(true);
       } else {
         // Sinon, ajouter une nouvelle catégorie en appelant la fonction onAddCategory
         onAddCategory(categoryName);
         handleCloseFormModal();
+        setShowConfirmationModal(true);
       }
     }
   };

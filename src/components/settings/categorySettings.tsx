@@ -10,7 +10,7 @@ interface Category {
   name: string;
 }
 
-const SettingsCategory = () => {
+const categorySettings = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -29,7 +29,8 @@ const SettingsCategory = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get('https://localhost:8000/api/categories');
-      setCategories(response.data["hydra:member"]);
+      const sortedCategories = response.data["hydra:member"].sort((a: Category, b: Category) => a.name.localeCompare(b.name));
+      setCategories(sortedCategories);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
     }
@@ -55,13 +56,25 @@ const SettingsCategory = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setCategoryToDelete(null);
-    setCategoryToEdit(null);
   };
 
-  const handleUpdateCategory = (updatedCategoryName: string) => {
+  const handleUpdateCategory = async (updatedCategoryName: string) => {
     if (categoryToEdit) {
-      console.log(`Mise à jour de la catégorie avec l'ID: ${categoryToEdit.id} et le nouveau nom: ${updatedCategoryName}`);
-      handleCloseModal(); // Ferme la modal après la modification réussie
+      try {
+        const response = await axios.put(
+          `https://localhost:8000/api/categories/${categoryToEdit.id}`,
+          { name: updatedCategoryName },
+          { headers: { 'Content-Type': 'application/ld+json' } }
+        );
+        const updatedCategory = response.data;
+        setCategories(categories.map(category =>
+          category.id === updatedCategory.id ? updatedCategory : category
+        ));
+        console.log(`Catégorie mise à jour avec succès:`, updatedCategory);
+        handleCloseModal(); // Ferme la modal après la modification réussie
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour de la catégorie:', error);
+      }
     }
   };
 
@@ -148,4 +161,4 @@ const SettingsCategory = () => {
   );
 }
 
-export default SettingsCategory;
+export default categorySettings;

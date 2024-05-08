@@ -7,7 +7,7 @@ import Command from "./components/command";
 import LoginForm from "./components/login";
 import Payment from "./components/payment";
 import SeatingPlan from "./components/seatingPlan";
-import Settings from "./components/settings";
+import Settings from "./components/settings/settings";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>

@@ -1,26 +1,27 @@
 import React from 'react';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import Articles from './articles';
-import SettingsCategory from './settingsCategory';
+import Products from './products';
+import SettingsCategory from './categorySettings';
+import Tva from './tva';
 import { Link } from "react-router-dom";
 
 function Settings() {
   return (
     <>
       <Tabs
-        defaultActiveKey="article"
+        defaultActiveKey="products"
         id="uncontrolled-tab-example"
         className="custom-tabs bg-dark"
       >
-        <Tab eventKey="article" title="Articles">
-          <Articles></Articles>
+        <Tab eventKey="products" title="Articles">
+          <Products></Products>
         </Tab>
         <Tab eventKey="category" title="Catégories">
           <SettingsCategory></SettingsCategory>
         </Tab>
         <Tab eventKey="tax" title="Taxes">
-          Tab content for Contact
+          <Tva></Tva>
         </Tab>
         <Tab eventKey="tickets" title="Tickets">
 
