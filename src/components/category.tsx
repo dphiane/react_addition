@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 interface Product {
   name: string;
@@ -42,7 +43,7 @@ const productsByCategory: { [key: string]: Product[] } = {
 };
 
 const Category: React.FC<CategoryProps> = ({ addToCart, cart  }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>('Entrée');
 
   const handleOpenCategory = (category: string) => {
     setSelectedCategory(category);
@@ -53,8 +54,8 @@ const Category: React.FC<CategoryProps> = ({ addToCart, cart  }) => {
   };
 
   return (
-    <div className="container-fluid d-flex bg-dark p-3">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark flex-column">
+    <div className="container bg-dark d-flex">
+      <nav className="navbar navbar-expand-lg navbar-dark flex-column">
         <div className="container-fluid">
             <ul className="navbar-nav flex-column">
               {Object.keys(productsByCategory).map((category, index) => (
@@ -65,17 +66,16 @@ const Category: React.FC<CategoryProps> = ({ addToCart, cart  }) => {
             </ul>
         </div>
       </nav>
-      <div className="row mt-3">
-        <div className="col">
           {selectedCategory && (
+            <div className="mt-3">
             <div className="d-flex flex-wrap">
               {productsByCategory[selectedCategory].map((product, index) => (
-                    <Button key={index} className='m-2' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
+                <Button key={index} className='m-2' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
               ))}
             </div>
+              </div>
           )}
-        </div>
-      </div>
+
     </div>
   );
 };

@@ -80,6 +80,9 @@ function Tva() {
   };
 
   const handleAddTva = async (newTva: number) => {
+    if(newTva === undefined){
+      return;
+    }
     if (tvas.some(tva => tva.tva === newTva)) {
       setExistingTva(newTva);
       setShowModal(true);
@@ -109,7 +112,7 @@ function Tva() {
         <tbody>
           {currentItems.map((tva, index) => (
             <tr key={index}>
-              <td className="d-flex justify-content-between">{tva.tva}
+              <td className="d-flex justify-content-between align-items-center">{tva.tva}%
                 <span>
                   <i className="fa-solid fa-pen-to-square m-2 text-warning"
                      onClick={() => handleEditTva(tva.id)}></i>

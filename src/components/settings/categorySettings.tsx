@@ -98,13 +98,13 @@ const categorySettings = () => {
       <Table striped bordered hover variant="dark">
         <thead>
           <tr>
-            <th>Noms</th>
+            <th>Catégories</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.map((category, index) => (
             <tr key={index}>
-              <td className="d-flex justify-content-between">
+              <td className="d-flex justify-content-between align-items-center">
                 {category.name}
                 <span>
                   <i

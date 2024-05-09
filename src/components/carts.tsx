@@ -77,7 +77,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
 
 
   return (
-    <div className="d-flex flex-column flex-grow-1 justify-content-between bg-dark">
+    <div className="carts d-flex flex-column justify-content-between bg-dark">
       <div>
         <div className='d-flex flex-column'>
           <TableSelection onTableSelect={handleTableSelect} />

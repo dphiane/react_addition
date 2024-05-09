@@ -42,7 +42,7 @@ const productsByCategory: { [ key: string ]: Product[] } = {
   
   };
 
-function MyTabs() {
+function SelectCategory() {
   const [tabData, setTabData] = useState<TabData[]>([]);
 
   useEffect(() => {
@@ -65,4 +65,4 @@ function MyTabs() {
 }
 
 
-export default MyTabs;
+export default SelectCategory;

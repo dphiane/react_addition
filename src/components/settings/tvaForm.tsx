@@ -38,19 +38,18 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(tva);
       if (tvaToUpdate) {
         onSubmit(tva!);
         handleCloseFormModal();
         if (existingTva !== null) {
-          setShowConfirmationModal(true); // Afficher la modal de confirmation si existingTva est défini
+          setShowConfirmationModal(true);
         }
         setShowConfirmationModal(true);
       } else {
         onAddTva(tva!);
         handleCloseFormModal();
         if (existingTva !== null) {
-          setShowConfirmationModal(true); // Afficher la modal de confirmation si existingTva est défini
+          setShowConfirmationModal(true);
         }
     }
   };

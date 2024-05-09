@@ -5,54 +5,85 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ProductsForm from "./productsForm";
 
-interface Products {
-  id: number
+export interface Products {
+  id?: number
   name: string;
   price: number;
-  tva: number;
-  category: string;
+  tva: string;//iri "tva": "/api/tvas/1"
+  category: string;// iri "category": "/api/categories/1"
 }
 
-function Products() {
-  const [Products, setProducts] = useState<Products[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [ProductsToDelete, setProductsToDelete] = useState<Products | null>(null);
-  const [ProductsToEdit, setProductsToEdit] = useState<Products | null>(null);
+export interface Tva {
+  id: number;
+  tva: number;
+}
+export interface Category {
+  id: number;
+  name: string;
+}
+function products() {
+  const [ tvas, setTvas ] = useState<Tva[]>([]);
+  const [ categories, setCategories ] = useState<Category[]>([]);
+  const [ products, setProducts ] = useState<Products[]>([]);
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ showModal, setShowModal ] = useState(false);
+  const [ productToDelete, setProductsToDelete ] = useState<Products | null>(null);
+  const [ productToEdit, setProductsToEdit ] = useState<Products | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = Products.slice(indexOfFirstItem, indexOfLastItem);
+  //const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   useEffect(() => {
+    fetchProducts();
     fetchCategories();
+    fetchTva();
   }, []);
+
+
+  const fetchTva = async () => {
+    try {
+      const response = await axios.get('https://localhost:8000/api/tvas');
+      setTvas(response.data[ "hydra:member" ]);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des taxes:', error);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('https://localhost:8000/api/Products');
-      const sortedCategories = response.data["hydra:member"].sort((a: Products, b: Products) => a.name.localeCompare(b.name));
-      setProducts(sortedCategories);
+      const response = await axios.get('https://localhost:8000/api/categories');
+      setCategories(response.data[ "hydra:member" ]);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des catégories:', error);
+    }
+  };
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('https://localhost:8000/api/products');
+      const sortedProduct = response.data[ "hydra:member" ].sort((a: Products, b: Products) => a.name.localeCompare(b.name));
+      setProducts(sortedProduct);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
     }
   };
 
-  const handleDeleteProducts = async (ProductsId: number) => {
+  const handleDeleteProducts = async (productId: number) => {
     try {
-      await axios.delete(`https://localhost:8000/api/Products/${ProductsId}`);
-      setProducts(Products.filter(Products => Products.id !== ProductsId));
+      await axios.delete(`https://localhost:8000/api/products/${productId}`);
+      setProducts(products.filter(products => products.id !== productId));
       setShowModal(false);
     } catch (error) {
       console.error('Erreur lors de la suppression de la catégorie:', error);
     }
   };
 
-  const handleEditProducts = (ProductsId: number) => {
-    const ProductsToEdit = Products.find(Products => Products.id === ProductsId);
-    if (ProductsToEdit) {
-      setProductsToEdit(ProductsToEdit);
+  const handleEditProducts = (productId: number) => {
+    const productToEdit = products.find(products => products.id === productId);
+    if (productToEdit) {
+      setProductsToEdit(productToEdit);
     }
   };
 
@@ -61,76 +92,129 @@ function Products() {
     setProductsToDelete(null);
   };
 
-  const handleUpdateProducts = async (updatedProductsName: string) => {
-    if (ProductsToEdit) {
+  const handleUpdateProducts = async (updatedProductName: string) => {
+    if (productToEdit) {
+      console.log(productToEdit);
       try {
-        const response = await axios.put(
-          `https://localhost:8000/api/Products/${ProductsToEdit.id}`,
-          { name: updatedProductsName },
+        const response = await axios.get(`https://localhost:8000/api/products/${productToEdit.id}`);
+        if (!response.data) {
+          console.error("Le produit à mettre à jour n'existe pas.");
+          return;
+        }
+        
+        const responseUpdate = await axios.put(
+          `https://localhost:8000/api/products/${productToEdit.id}`,
+          { ...productToEdit, name: updatedProductName },
           { headers: { 'Content-Type': 'application/ld+json' } }
         );
-        const updatedProducts = response.data;
-        setProducts(Products.map(Products =>
-          Products.id === updatedProducts.id ? updatedProducts : Products
+        
+        const updatedProduct = responseUpdate.data;
+        setProducts(products.map(product =>
+          product.id === updatedProduct.id ? updatedProduct : product
         ));
-        console.log(`Catégorie mise à jour avec succès:`, updatedProducts);
-        handleCloseModal(); // Ferme la modal après la modification réussie
+        console.log(`L'article mis à jour avec succès:`, updatedProduct);
+        handleCloseModal();
       } catch (error) {
-        console.error('Erreur lors de la mise à jour de la catégorie:', error);
+        console.error("Erreur lors de la mise à jour de l'article:", error);
       }
     }
   };
+  
 
-  const handleAddProducts = async (newProductsName: string) => {
+  const handleAddProducts = async (newProduct: Products) => {
     try {
       const response = await axios.post(
-        'https://localhost:8000/api/Products',
-        { name: newProductsName },
-        { headers: { 'Content-Type': 'application/ld+json' } }
+        'https://localhost:8000/api/products',
+        newProduct,
+        { headers: { 'Content-Type': 'application/ld+json' } } // Utilisez application/json au lieu de application/ld+json si le serveur l'attend
       );
-      setProducts([...Products, response.data]); // Ajoute la nouvelle catégorie à la liste actuelle
-      handleCloseModal(); // Ferme la modal après l'ajout réussi
+      const addedProduct = response.data;
+      setProducts([ ...products, addedProduct ]); // Ajouter le produit retourné par le serveur
+      handleCloseModal();
     } catch (error) {
-      console.error('Erreur lors de l\'ajout de la catégorie:', error);
+      console.error("Erreur lors de l'ajout de l'article:", error);
     }
   };
+
+  function getCategoryNameFromIRI(categoryIRI: string | undefined) {
+    // Vérifiez si categoryIRI est défini, si non, retournez une valeur par défaut
+    if (!categoryIRI) {
+      return 'Catégorie inconnue';
+    }
+    
+    // Utilisez une assertion de type non nul pour indiquer à TypeScript que categoryIRI est non nul à ce stade
+    const categoryId = categoryIRI.split('/').pop()!;
+    
+    // Rechercher la catégorie correspondante dans vos données
+    const category = categories.find(cat => cat.id === parseInt(categoryId, 10));
   
+    // Si la catégorie est trouvée, retourner son nom, sinon retourner une chaîne vide ou une indication selon votre besoin
+    return category ? category.name : 'Catégorie inconnue';
+  }
+
+  function getTvaFromIri(tvaIRI:string | undefined){
+      if(!tvaIRI){
+        return 'TVA inconnue';
+      }
+      const tvaId = tvaIRI.split('/').pop()!;
+      const tva = tvas.find(tva =>tva.id === parseInt(tvaId,10));
+      return tva ? tva.tva : 'Tva inconnue';
+  }
+  
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    setCurrentPage(1); // Reset current page when search term changes
+  };
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
   return (
     <div className="bg-dark">
+      <input
+        type="text"
+        placeholder="Rechercher un article"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="form-control m-2"
+      />
       <Table striped bordered hover variant="dark">
+
         <thead>
           <tr>
             <th>Noms</th>
             <th>Catégories</th>
-            <th>TVA</th>
-            <th>Prix</th>
+            <th className="text-center">TVA</th>
+            <th className="text-center">Prix</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((Products, index) => (
+          {currentItems.map((products, index) => (
             <tr key={index}>
-              <td className="d-flex justify-content-between">{Products.name}
-                <span>
-                  <i className="fa-solid fa-pen-to-square m-2 text-warning"
-                     onClick={() => handleEditProducts(Products.id)}></i>
-                  <i className="fa-solid fa-trash m-2 text-danger"
-                     onClick={() => { setProductsToDelete(Products); setShowModal(true);}}></i>
-                </span>
+              <td>{products.name}</td>
+              <td>{getCategoryNameFromIRI(products.category)}</td>
+              <td className="text-center">{getTvaFromIri(products.tva)} %</td>
+              <td className="text-center">{products.price} €</td>
+              <td className="d-flex justify-content-center align-items-center">
+                <i className="fa-solid fa-pen-to-square m-1 text-warning"
+                  onClick={() => handleEditProducts(products.id!)}></i>
+                <i className="fa-solid fa-trash text-danger m-1"
+                  onClick={() => { setProductsToDelete(products); setShowModal(true); }}></i>
               </td>
-              <td>{Products.category}</td>
-              <td>{Products.tva}</td>
-              <td>{Products.price}</td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <ProductsForm onAddProducts={handleAddProducts} productsToUpdate={ProductsToEdit} onSubmit={handleUpdateProducts} />
+      <ProductsForm onAddProducts={handleAddProducts} productsToUpdate={productToEdit} onSubmit={handleUpdateProducts} tvas={tvas} categories={categories} />
 
       <nav>
         <div className="d-flex justify-content-center">
-          {Products.length > 10 && (
+          {products.length > 10 && (
             <ul className="pagination">
-              {Array.from({ length: Math.ceil(Products.length / itemsPerPage) }, (_, index) => (
+              {Array.from({ length: Math.ceil(products.length / itemsPerPage) }, (_, index) => (
                 <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
                   <button onClick={() => paginate(index + 1)} className="page-link">
                     {index + 1}
@@ -147,13 +231,13 @@ function Products() {
           <Modal.Title>Confirmer la suppression</Modal.Title>
         </Modal.Header>
         <Modal.Body className="bg-dark">
-          Êtes-vous sûr de vouloir supprimer la catégorie {ProductsToDelete?.name} ?
+          Êtes-vous sûr de vouloir supprimer la catégorie {productToDelete?.name} ?
         </Modal.Body>
         <Modal.Footer className="bg-dark">
           <Button variant="secondary" onClick={handleCloseModal}>
             Annuler
           </Button>
-          <Button variant="danger" onClick={() => handleDeleteProducts(ProductsToDelete?.id!)}>
+          <Button variant="danger" onClick={() => handleDeleteProducts(productToDelete?.id!)}>
             Supprimer
           </Button>
         </Modal.Footer>
@@ -162,4 +246,4 @@ function Products() {
   );
 }
 
-export default Products;
+export default products;

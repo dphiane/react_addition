@@ -11,8 +11,8 @@ function Settings() {
     <>
       <Tabs
         defaultActiveKey="products"
-        id="uncontrolled-tab-example"
-        className="custom-tabs bg-dark"
+        id="settings-tabs"
+        className="custom-tabs bg-dark position-relative"
       >
         <Tab eventKey="products" title="Articles">
           <Products></Products>
@@ -30,7 +30,7 @@ function Settings() {
 
         </Tab>
       </Tabs>
-      <Link to={"/"}><button className="btn btn-secondary m-2">Retour</button></Link>
+      <Link to={"/"}><button className="btn btn-secondary m-2 position-absolute bottom-0 start-0">Retour</button></Link>
     </>
   );
 }
