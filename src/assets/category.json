@@ -1,0 +1,24 @@
+{
+  "Entrée": [
+    { "name": "Salade", "price": 5.00, "tva": 10 },
+    { "name": "Soupe", "price": 4.00, "tva": 10 },
+    { "name": "Bruschetta", "price": 6.00, "tva": 10 }
+  ],
+  "Plats": [
+    { "name": "Poulet rôti", "price": 10.00, "tva": 10 },
+    { "name": "Pâtes carbonara", "price": 12.00, "tva": 10 },
+    { "name": "Steak frites", "price": 15.00, "tva": 10 }
+  ],
+  "Dessert": [
+    { "name": "Tiramisu", "price": 8.00, "tva": 10 },
+    { "name": "Crème brûlée", "price": 7.00, "tva": 10 },
+    { "name": "Gâteau au chocolat", "price": 6.50, "tva": 10 }
+  ],
+  "Boisson": [
+    { "name": "Eau plate", "price": 2.50, "tva": 10 },
+    { "name": "Coca-Cola", "price": 3.50, "tva": 10 },
+    { "name": "Vin rouge", "price": 12.00, "tva": 20 }
+  ],
+  "Vin": [],
+  "Boisson_Chaude": []
+}

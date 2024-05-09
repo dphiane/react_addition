@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Cart, { CartItemType } from './cart';
+import Carts, { CartItemType } from './carts';
 import Categories from './category';
 
 export default function Command() {
     const [ cart, setCart ] = useState<{ [ key: string ]: CartItemType }>({});
+    const [selectedTable, setSelectedTable] = useState<number | null>(null);
     const initialQuantity: number = 1;
+
+    const handleTableSelect = (tableNumber: number | null) => {
+        setSelectedTable(tableNumber);
+    };
+    
+    useEffect(() => {
+        if (selectedTable !== null) {
+            const cartFromLocalStorage = localStorage.getItem(`cart_${selectedTable}`);
+            if (cartFromLocalStorage) {
+                setCart(JSON.parse(cartFromLocalStorage));
+            } else {
+                setCart({});
+            }
+        }
+    }, [selectedTable]);
 
     const updateCart = (product: string, quantity: number, price: number) => {
         setCart((prevCart) => {
@@ -14,7 +30,7 @@ export default function Command() {
             if (updatedCart[ product ]) {
                 updatedCart[ product ].quantity = quantity;
                 updatedCart[ product ].price = price;
-            } 
+            }
 
             if (quantity === 0) {
                 delete updatedCart[ product ];
@@ -23,7 +39,7 @@ export default function Command() {
             return updatedCart;
         });
     };
-    const addToCart = (product: string, quantity: number, price: number) => {
+    const addToCart = (product: string, quantity: number, price: number, tva: number) => {
         setCart((prevCart) => {
             const updatedCart = { ...prevCart };
 
@@ -31,27 +47,27 @@ export default function Command() {
                 updatedCart[ product ].quantity += quantity;
                 updatedCart[ product ].price = price;
             } else {
-                updatedCart[ product ] = { quantity, price };
+                updatedCart[ product ] = { quantity, price, tva };
             }
 
             if (quantity === 0) {
                 delete updatedCart[ product ];
             }
-
             return updatedCart;
         });
     };
 
     return (
-        <div className="container-fluid vh-100">
-            <div className="d-flex h-100">
-                <Cart cart={cart} addToCart={addToCart} updateQuantity={updateCart} initialQuantity={initialQuantity} />
-                <div className="d-flex flex-column justify-content-between bg-secondary-subtle w-75">
+        <div className="vh-100">
+            <div className="h-100 d-flex flex-column-reverse flex-sm-row">
+                    <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} onTableSelect={handleTableSelect} />
+                <div className="d-flex flex-grow-1 flex-column-reverse flex-sm-column justify-content-between bg-dark">
                     <Categories addToCart={addToCart} cart={cart} />
-                    <div className="bg-secondary text-light text-center fw-bold p-2">
-                        <Link to={'/'}>Menu</Link>
+                    <div className="options bg-dark text-light text-center fw-bold p-2">
+                        <Link to={'/settings'}>Options</Link>
                     </div>
                 </div>
+
             </div>
         </div>
     );
