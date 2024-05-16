@@ -71,8 +71,8 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, onSubmit,
   
 
   return (
-    <div className='d-flex justify-content-end'>
-      <Button className='m-2' onClick={handleShowFormModal}>
+    <div className='position-absolute bottom-0 end-0 m-2'>
+      <Button className='' onClick={handleShowFormModal}>
         Ajouter un article
       </Button>
 

@@ -1,10 +1,12 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+
 import Products from './products';
-import SettingsCategory from './categorySettings';
+import SettingsCategory from './category';
 import Tva from './tva';
-import { Link } from "react-router-dom";
+
 
 function Settings() {
   return (
@@ -12,7 +14,7 @@ function Settings() {
       <Tabs
         defaultActiveKey="products"
         id="settings-tabs"
-        className="custom-tabs bg-dark position-relative"
+        className="custom-tabs bg-dark"
       >
         <Tab eventKey="products" title="Articles">
           <Products></Products>

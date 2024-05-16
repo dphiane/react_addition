@@ -75,9 +75,8 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
     localStorage.setItem(`cart_${selectedTable}`, JSON.stringify(cart));
   }
 
-
   return (
-    <div className="carts d-flex flex-column justify-content-between bg-dark">
+    <div className="carts flex-grow-1 d-flex flex-column justify-content-between bg-dark">
       <div>
         <div className='d-flex flex-column'>
           <TableSelection onTableSelect={handleTableSelect} />

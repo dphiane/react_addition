@@ -61,7 +61,7 @@ export default function Command() {
         <div className="vh-100">
             <div className="h-100 d-flex flex-column-reverse flex-sm-row">
                     <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} onTableSelect={handleTableSelect} />
-                <div className="d-flex flex-grow-1 flex-column-reverse flex-sm-column justify-content-between bg-dark">
+                <div className="d-flex flex-column-reverse flex-sm-column justify-content-between bg-dark">
                     <Categories addToCart={addToCart} cart={cart} />
                     <div className="options bg-dark text-light text-center fw-bold p-2">
                         <Link to={'/settings'}>Options</Link>

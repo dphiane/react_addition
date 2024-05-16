@@ -9,7 +9,7 @@ interface Category {
 interface CategoryFormProps {
   categoryToUpdate: Category | null;
   onSubmit: (updatedCategoryName: string) => void;
-  onAddCategory: (newCategoryName: string) => void; // Ajouter la fonction de mise à jour des catégories comme prop
+  onAddCategory: (newCategoryName: string) => void;
 }
 
 const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onSubmit, onAddCategory }) => {

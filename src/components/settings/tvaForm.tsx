@@ -57,7 +57,7 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
   return (
     <div className='d-flex justify-content-end'>
       <Button className='m-2' onClick={handleShowFormModal}>
-        Ajouter une taxe
+        Ajouter une TVA
       </Button>
 
       <Modal show={showFormModal} onHide={handleCloseFormModal}>
