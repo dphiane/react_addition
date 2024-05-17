@@ -79,26 +79,36 @@ li {
 .carts{
   min-width: 300px;
 }
-
+.span-text {
+  display: inline-block;
+  width: 250px;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+.btn-select-product{
+  width: 150px;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+.options{
+  border-top: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;  
+}
 @media (min-width:576px) {
   .carts{
     border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
   }
-  .options{
-    border-top: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;  
+}
+@media (max-width: 455px) {
+  .span-text {
+    width: 300px;
   }
 }
-@media (max-width: 576px) {
-  .span-text {
-    display: inline-block;
-    width: 160px;
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
-    overflow: hidden; /* Cache le texte qui dépasse */
-    text-overflow: ellipsis; /* Affiche une ellipse (...) pour indiquer le texte coupé */
-  }
-  .options{
-    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;  
-  }
+@media(max-width: 575px) and (min-width: 456px){
+.span-text{
+  width: 400px;
+}
 }
 
 .calculator-case{
@@ -110,7 +120,7 @@ justify-content: center;
 }
 
 .payment-case{
-  width: 100%;
+  width: 150px;
   padding: 10px;
   margin: 10px;
 }
@@ -149,7 +159,7 @@ justify-content: center;
 }
 
 .comma{
-  width: 20%;
+  width: 15%;
 }
 
 .custom-tabs .nav-link {
@@ -167,4 +177,7 @@ justify-content: center;
   text-decoration: underline $primary;
   text-decoration-thickness: 3px;
   text-underline-offset: 8px;
+}
+.navbar{
+  white-space: nowrap;
 }

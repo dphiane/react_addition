@@ -18,14 +18,14 @@ export interface Tva {
   tva: number;
 }
 
-export interface Category {
+export interface CategoryInterface {
   id: number;
   name: string;
 }
 
 function Products() {
   const [tvas, setTvas] = useState<Tva[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [products, setProducts] = useState<Products[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -77,7 +77,8 @@ function Products() {
     setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/products');
-      setProducts(response.data["hydra:member"]);
+      const products: Products[] = response.data["hydra:member"].reverse(); // Reverse the array to display in descending order
+      setProducts(products);
     } catch (error) {
       console.error('Erreur lors de la récupération des articles:', error);
       setErrors('Erreur lors de la récupération des articles');
@@ -100,6 +101,10 @@ function Products() {
     }
   };
 
+  const resetProductToUpdate = () => {
+    setProductsToEdit(null);
+  };
+
   const handleEditProducts = (productId: number) => {
     const productToEdit = products.find(products => products.id === productId);
     if (productToEdit) {
@@ -112,7 +117,7 @@ function Products() {
     setProductsToDelete(null);
   };
 
-  const handleUpdateProducts = async (updatedProductName: string) => {
+  const handleUpdateProducts = async (updatedProduct: Products) => {
     if (productToEdit) {
       setLoading(true);
       try {
@@ -121,18 +126,19 @@ function Products() {
           console.error("Le produit à mettre à jour n'existe pas.");
           return;
         }
-
+  
         const responseUpdate = await axios.put(
           `https://localhost:8000/api/products/${productToEdit.id}`,
-          { ...productToEdit, name: updatedProductName },
+          updatedProduct,
           { headers: { 'Content-Type': 'application/ld+json' } }
         );
-
-        const updatedProduct = responseUpdate.data;
+  
+        const updatedProductData = responseUpdate.data;
         setProducts(products.map(product =>
-          product.id === updatedProduct.id ? updatedProduct : product
+          product.id === updatedProductData.id ? updatedProductData : product
         ));
-        console.log(`L'article mis à jour avec succès:`, updatedProduct);
+        console.log(`L'article mis à jour avec succès:`, updatedProductData);
+        setProductsToEdit(null);
         handleCloseModal();
       } catch (error) {
         console.error("Erreur lors de la mise à jour de l'article:", error);
@@ -142,6 +148,7 @@ function Products() {
       }
     }
   };
+  
 
   const handleAddProducts = async (newProduct: Products) => {
     setLoading(true);
@@ -152,7 +159,7 @@ function Products() {
         { headers: { 'Content-Type': 'application/ld+json' } } // Utilisez application/json au lieu de application/ld+json si le serveur l'attend
       );
       const addedProduct = response.data;
-      setProducts([...products, addedProduct]); // Ajouter le produit retourné par le serveur
+      setProducts([ addedProduct,...products]); // Ajouter le produit retourné par le serveur
       handleCloseModal();
     } catch (error) {
       console.error("Erreur lors de l'ajout de l'article:", error);
@@ -192,7 +199,7 @@ function Products() {
   const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="bg-dark">
+    <div className="bg-dark pb-5 position-relative">
       {errors && (
         <div className="alert alert-danger" role="alert">
           {errors}
@@ -209,8 +216,8 @@ function Products() {
       </div>
       {loading ? (
         <div className="d-flex justify-content-center my-4">
-          <div className="spinner-border text-light" role="status">
-            <span className="visually-hidden">Loading...</span>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Chargement</span>
           </div>
         </div>
       ) : (
@@ -242,10 +249,15 @@ function Products() {
           </tbody>
         </Table>
       )}
-      <ProductsForm onAddProducts={handleAddProducts} productsToUpdate={productToEdit} onSubmit={handleUpdateProducts} tvas={tvas} categories={categories} />
-
       <nav>
         <div className="d-flex justify-content-center pb-2">
+      <ProductsForm 
+        onAddProducts={handleAddProducts} 
+        productsToUpdate={productToEdit} 
+        editProduct={handleUpdateProducts} 
+        tvas={tvas} categories={categories} 
+        resetProductToUpdate={resetProductToUpdate}
+          />
           {filteredProducts.length > 15 && (
             <ul className="pagination">
               {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (product, index) => (

@@ -31,7 +31,7 @@ const Payment = () => {
     }
 
     return (
-        <div className="container p-0 d-flex vh-100 bg-dark">
+        <div className="container-fluid flex-sm-row flex-column p-0 d-flex vh-100 bg-dark">
             <ClosePayment show={showModal} onHide={() => setShowModal(false)} payments={payments} totalCart={totalCart}/>
             <Cart remainder={remainder} totalCart={getTotalCart} payments={payments} onDeletePayment={deletePayment}></Cart>
             <Calculator onPaymentConfirmed={handlePaymentConfirmation} remainder={remainder}></Calculator>

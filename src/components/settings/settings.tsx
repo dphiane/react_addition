@@ -32,7 +32,7 @@ function Settings() {
 
         </Tab>
       </Tabs>
-      <Link to={"/"}><button className="btn btn-secondary m-2 position-absolute bottom-0 start-0">Retour</button></Link>
+      <Link to={"/"}><button className="btn btn-secondary position-absolute start-0 bottom-0 m-2">Retour</button></Link>
     </>
   );
 }

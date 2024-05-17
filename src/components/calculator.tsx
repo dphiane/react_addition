@@ -72,7 +72,7 @@ const Calculator = ({ onPaymentConfirmed, remainder }: CalculatorProps) => {
 
   return (
 
-    <div className="flex-grow-1 d-flex flex-column justify-content-between bg-dark">
+    <div className="container-fluid flex-grow-1 d-flex flex-column justify-content-between bg-dark">
       <div>
       </div>
       <PaymentModal show={showModal} onHide={() => setShowModal(false)} />
@@ -109,7 +109,7 @@ const Calculator = ({ onPaymentConfirmed, remainder }: CalculatorProps) => {
           <div className="calculator-case bg-primary text-light border" onClick={() => handleInput('+')}><i className="fa-solid fa-plus"></i></div>
         </div>
       </div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-center flex-wrap mt-2">
         <button className="payment-case border btn text-light" onClick={() => { handleConfirmPayment('cash', parseFloat(calcul)) }}>
           <p className="m-0 text-center"><i className="fa-solid fa-lg fa-money-bill"></i></p>
           <p className="mt-1 mb-0 text-center">Espèce</p>
