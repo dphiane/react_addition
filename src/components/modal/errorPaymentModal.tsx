@@ -6,7 +6,7 @@ interface PaymentModalProps {
     onHide: () => void;
   }
 
-const PaymentModal = ({ show, onHide }:PaymentModalProps) => {
+const ErrorPaymentModal = ({ show, onHide }:PaymentModalProps) => {
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton className='bg-dark'>
@@ -24,4 +24,4 @@ const PaymentModal = ({ show, onHide }:PaymentModalProps) => {
   );
 };
 
-export default PaymentModal;
+export default ErrorPaymentModal;

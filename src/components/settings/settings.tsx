@@ -10,7 +10,7 @@ import Tva from './tva';
 
 function Settings() {
   return (
-    <>
+    <div className=' min-vh-100 '>
       <Tabs
         defaultActiveKey="products"
         id="settings-tabs"
@@ -33,7 +33,7 @@ function Settings() {
         </Tab>
       </Tabs>
       <Link to={"/"}><button className="btn btn-secondary position-absolute start-0 bottom-0 m-2">Retour</button></Link>
-    </>
+    </div>
   );
 }
 

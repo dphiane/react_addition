@@ -17,12 +17,18 @@ const TableList: React.FC<TableListProps> = ({ tables, onTableSelect }) => {
         const storedTable = localStorage.getItem('selectTable');
         return storedTable ? parseInt(storedTable.split("_")[1]) : 1;
     });
+
     const ucFirst = (str: string) => {
         return str.charAt(0).toUpperCase() + str.slice(1);
     };
+    const formatTableName = (name: string) => {
+        return name.replace(/([a-zA-Z]+)(\d+)/, '$1 $2');
+    };
+
     const handleTableSelect = (index: number) => {
         setSelectedTable(index + 1)
     }
+
     return (
         <div>
             <Dropdown>
@@ -32,7 +38,7 @@ const TableList: React.FC<TableListProps> = ({ tables, onTableSelect }) => {
                 <Dropdown.Menu className="w-100 bg-dark">
                     {tables.map((table, index) => (
                         <Dropdown.Item className="text-center" key={index} onClick={() => { onTableSelect(index); handleTableSelect(index) }}>
-                            {ucFirst(table.name)}
+                            {ucFirst(formatTableName(table.name))}
                         </Dropdown.Item>
                     ))}
                 </Dropdown.Menu>

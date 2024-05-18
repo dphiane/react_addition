@@ -58,8 +58,7 @@ export default function Command() {
     };
 
     return (
-        <div className="vh-100">
-            <div className="h-100 d-flex flex-column flex-sm-row">
+            <div className="min-vh-100 d-flex flex-column flex-sm-row payment-container">
                     <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} onTableSelect={handleTableSelect} />
                 <div className="d-flex justify-content-between flex-column bg-dark">
                     <Categories addToCart={addToCart} cart={cart} />
@@ -68,6 +67,5 @@ export default function Command() {
                     </div>
                 </div>
             </div>
-        </div>
     );
 }

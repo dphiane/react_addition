@@ -10,6 +10,9 @@ const SeatingPlan = () => {
     const ucFirst = (str: string) => {
         return str.charAt(0).toUpperCase() + str.slice(1);
     };
+    const formatTableName = (name: string) => {
+        return name.replace(/([a-zA-Z]+)(\d+)/, '$1 $2');
+    };
 
     const handleTableSelect = (index: number) => {
         const selectedTableIndex = index + 1;
@@ -25,7 +28,7 @@ const SeatingPlan = () => {
                 {tables.tables.map((table, index) => (
                     <button
                         className="text-center m-2 btn btn-primary" key={index} onClick={() => { handleTableSelect(index); }}>
-                        {ucFirst(table.name)}
+                        {ucFirst(formatTableName(table.name))}
                     </button>
                 ))}
             </div>

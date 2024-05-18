@@ -20,7 +20,8 @@ const Payment = () => {
     const handlePaymentConfirmation = (paymentData: { amount: number, paymentMethod: string }) => {
         setPayments(prevPayments => [ ...prevPayments, paymentData ]);
     };
-    const deletePayment = (index: number) => {
+
+    const deletePaymentMethod = (index: number) => {
         const updatedPayments = [...payments];
         updatedPayments.splice(index, 1);
         setPayments(updatedPayments);
@@ -31,9 +32,9 @@ const Payment = () => {
     }
 
     return (
-        <div className="container-fluid flex-sm-row flex-column p-0 d-flex vh-100 bg-dark">
+        <div className="container-fluid payment-container flex-sm-row flex-column p-0 d-flex min-vh-100  bg-dark">
             <ClosePayment show={showModal} onHide={() => setShowModal(false)} payments={payments} totalCart={totalCart}/>
-            <Cart remainder={remainder} totalCart={getTotalCart} payments={payments} onDeletePayment={deletePayment}></Cart>
+            <Cart remainder={remainder} totalCart={getTotalCart} payments={payments} onDeletePayment={deletePaymentMethod}></Cart>
             <Calculator onPaymentConfirmed={handlePaymentConfirmation} remainder={remainder}></Calculator>
         </div>
     )

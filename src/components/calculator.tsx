@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useRef } from "react";
-import PaymentModal from './modal/paymentModal';
+import PaymentModal from './modal/errorPaymentModal';
 // @ts-ignore
 import comma from "../assets/comma.png";
 
@@ -110,19 +110,19 @@ const Calculator = ({ onPaymentConfirmed, remainder }: CalculatorProps) => {
         </div>
       </div>
       <div className="d-flex justify-content-center flex-wrap mt-2">
-        <button className="payment-case border btn text-light" onClick={() => { handleConfirmPayment('cash', parseFloat(calcul)) }}>
+        <button className="payment-case border btn text-light" onClick={() => { handleConfirmPayment('Espèce', parseFloat(calcul)) }}>
           <p className="m-0 text-center"><i className="fa-solid fa-lg fa-money-bill"></i></p>
           <p className="mt-1 mb-0 text-center">Espèce</p>
         </button>
-        <button className="payment-case btn border text-light" onClick={() => { handleConfirmPayment('credit-card', parseFloat(calcul)) }}>
+        <button className="payment-case btn border text-light" onClick={() => { handleConfirmPayment("Carte bancaire", parseFloat(calcul)) }}>
           <p className="m-0 text-center"><i className="fa-solid fa-lg fa-credit-card"></i></p>
           <p className="mt-1 mb-0 text-center">Carte de crédit</p>
         </button>
-        <button className="payment-case btn border text-light" onClick={() => { handleConfirmPayment('money-check', parseFloat(calcul)) }}>
+        <button className="payment-case btn border text-light" onClick={() => { handleConfirmPayment("Chèque", parseFloat(calcul)) }}>
           <p className="m-0 text-center"><i className="fa-solid fa-lg fa-money-check"></i></p>
           <p className="mt-1 mb-0 text-center">Chèque</p>
         </button>
-        <button className="payment-case btn border text-light" onClick={() => { handleConfirmPayment('ticket', parseFloat(calcul)) }}>
+        <button className="payment-case btn border text-light" onClick={() => { handleConfirmPayment('Ticket restaurant', parseFloat(calcul)) }}>
           <p className="m-0 text-center"><i className="fa-solid fa-lg fa-ticket"></i></p>
           <p className="mt-1 mb-0 text-center">Ticket Restaurant</p>
         </button>

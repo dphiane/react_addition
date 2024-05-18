@@ -18,31 +18,33 @@ interface paymentProps {
   onDeletePayment: (index: number) => void;
 }
 
-const Cart = ({ remainder, totalCart, payments,onDeletePayment }: paymentProps) => {
-
+const Cart = ({ remainder, totalCart, payments, onDeletePayment }: paymentProps) => {
   const selectTable = localStorage.getItem("selectTable");
   let cart: { [ key: string ]: CartItem } = {};
+  
+  useEffect(() => {
+    totalCart(calculateTotalPrice(cart))
+  })
+  
   if (selectTable) {
     const cartData = localStorage.getItem(selectTable);
     if (cartData) {
       cart = JSON.parse(cartData);
     }
   }
+
   const handleDelete = (index: number) => {
-    onDeletePayment(index); // Appeler la fonction onDeletePayment avec l'index du paiement à supprimer
-    };
-  useEffect(() => {
-    totalCart(calculateTotalPrice(cart))
-  })
+    onDeletePayment(index);
+  };
 
   return (
     <>
       {selectTable && Object.keys(cart).length > 0 ? (
-        <div className="d-flex flex-column flex-grow-1 justify-content-between border-end bg-dark">
+        <div className="carts d-flex flex-column flex-grow-1 justify-content-between border-end bg-dark">
           <div>
             <div className="d-flex flex-column">
-              <p className="fw-bold text-center mb-0">Table {parseInt(selectTable.split("_")[ 1 ])}</p>
-              <p className="text-center">
+              <h2 className="fw-bold text-center mb-0">Table {parseInt(selectTable.split("_")[ 1 ])}</h2>
+              <p className="text-center m-0">
                 {Object.keys(cart).length} article
                 {Object.keys(cart).length > 1 ? "s" : ""}
               </p>
@@ -60,6 +62,7 @@ const Cart = ({ remainder, totalCart, payments,onDeletePayment }: paymentProps) 
             </div>
           </div>
           <div>
+            <hr />
             <p className="position-relative m-1">
               TVA <span className="position-absolute end-0 me-2">{calculateTotalTVA(cart)} €</span>
             </p>
@@ -72,7 +75,7 @@ const Cart = ({ remainder, totalCart, payments,onDeletePayment }: paymentProps) 
             <ul>
               {payments.map((payment, index) => (
                 <li key={index} className="position-relative m-1">
-                {payment.amount}€ en {payment.paymentMethod} <button className="btn position-absolute end-0 text-danger p-0 me-2" onClick={() => handleDelete(index)}><i className="fa-solid fa-trash"></i></button>
+                  {payment.amount}€ en {payment.paymentMethod} <button className="btn position-absolute end-0 text-danger p-0 me-2" onClick={() => handleDelete(index)}><i className="fa-solid fa-trash"></i></button>
                 </li>
               ))}
             </ul>

@@ -11975,7 +11975,7 @@ html {
 
 body {
   height: 100%;
-  max-width: 992px;
+  max-width: 1280px;
   margin: auto;
   padding: 0;
   background-color: #16191B;
@@ -12076,6 +12076,11 @@ li {
 @media (max-width: 575px) and (min-width: 456px) {
   .span-text {
     width: 400px;
+  }
+}
+@media (max-width: 600px) and (min-width: 576px) {
+  .payment-container {
+    flex-direction: column !important;
   }
 }
 .calculator-case {

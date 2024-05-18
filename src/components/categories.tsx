@@ -113,7 +113,7 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
         <div className="mt-3">
           <div className="d-flex justify-content-center flex-wrap">
             {currentProducts.map((product, index) => (
-              <Button key={index} className='m-2 btn-select-product' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
+              <Button key={index} className='m-1 btn-select-product' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
             ))}
           </div>
 

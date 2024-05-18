@@ -12,7 +12,7 @@ html {
 }
 body {
   height: 100%;
-  max-width: 992px;
+  max-width: 1280px;
   margin: auto;
   padding: 0;
   background-color: $dark;
@@ -110,6 +110,11 @@ li {
   width: 400px;
 }
 }
+@media(max-width: 600px) and (min-width: 576px){
+  .payment-container{
+    flex-direction: column !important;
+  }
+  }
 
 .calculator-case{
 width: 75px;
