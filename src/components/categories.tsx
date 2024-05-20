@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Products,Tva } from './settings/products';
+import { Products, Tva } from './settings/products';
 
 interface CartItemType {
   quantity: number;
@@ -10,13 +10,13 @@ interface CartItemType {
 }
 
 interface CategoryProps {
-  addToCart: (name: string, quantity: number, price: number, tva: number) => void;
+  addToCart: (name: string, quantity: number, price: number, tva: number, id: number) => void;
   cart: { [ key: string ]: CartItemType };
 }
 interface CategoryInterface {
   id: number;
   name: string;
-  products: Products[]; // Si vous recevez également des produits dans la réponse JSON
+  products: Products[];
 }
 
 const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
@@ -24,7 +24,8 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   const [ selectedCategory, setSelectedCategory ] = useState<string>('Apéritifs');
   const [ categoryProducts, setCategoryProducts ] = useState<Products[]>([]);
   const [ products, setProducts ] = useState<Products[]>([]);
-  const [tvas, setTvas] = useState<Tva[]>([]);
+  const [ tvas, setTvas ] = useState<Tva[]>([]);
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const [ currentPage, setCurrentPage ] = useState(1);
   const productsPerPage = 10;
@@ -34,6 +35,7 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   const totalPages = Math.ceil(categoryProducts.length / productsPerPage);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  
   useEffect(() => {
     fetchCategories();
     fetchProducts();
@@ -46,12 +48,15 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   }, [ selectedCategory, products ]);
 
   const fetchTva = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/tvas');
-      setTvas(response.data["hydra:member"]);
+      setTvas(response.data[ "hydra:member" ]);
     } catch (error) {
       console.error('Erreur lors de la récupération des taxes:', error);
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
   function getCategoryNameFromIRI(categoryIRI: string | undefined) {
@@ -73,20 +78,26 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   }
 
   const fetchProducts = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/products');
       setProducts(response.data[ "hydra:member" ]);
     } catch (error) {
       console.error('Erreur lors de la récupération des articles:', error);
+    } finally {
+      setLoading(false);
     }
   };
   const fetchCategories = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/categories');
       const sortedCategories = response.data[ "hydra:member" ].sort((a: CategoryInterface, b: CategoryInterface) => a.name.localeCompare(b.name));
       setCategories(sortedCategories);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,19 +106,21 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   };
 
   const handleProductSelection = (product: Products) => {
-    addToCart(product.name, 1, product.price, getTvaFromIri(product.tva));
+    addToCart(product.name, 1, product.price, getTvaFromIri(product.tva), product.id!);
   };
+
+
 
   return (
     <div className="container-fluid bg-dark d-flex">
       <nav className="navbar navbar-dark flex-column m-2">
-          <ul className="navbar-nav navbar-expand-lg flex-column">
-            {categories.map((category) => (
-              <li key={category.id} className={`nav-item fw-bold ${selectedCategory === category.name ? 'nav-selected' : ''}`}>
-                <button className="nav-link bg-dark border-0 text-white" onClick={() => handleOpenCategory(category.name)}>{category.name}</button>
-              </li>
-            ))}
-          </ul>
+        <ul className="navbar-nav navbar-expand-lg flex-column">
+          {categories.map((category) => (
+            <li key={category.id} className={`nav-item fw-bold ${selectedCategory === category.name ? 'nav-selected' : ''}`}>
+              <button className="nav-link bg-dark border-0 text-white" onClick={() => handleOpenCategory(category.name)}>{category.name}</button>
+            </li>
+          ))}
+        </ul>
       </nav>
       {selectedCategory && (
         <div className="mt-3">
@@ -116,7 +129,15 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
               <Button key={index} className='m-1 btn-select-product' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
             ))}
           </div>
-
+          {
+            loading && (
+              <div className="d-flex justify-content-center my-4">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Chargement</span>
+                </div>
+              </div>
+            )
+          }
           {totalPages > 1 && (
             <div className='d-flex justify-content-center m-2'>
               <ul className="pagination">

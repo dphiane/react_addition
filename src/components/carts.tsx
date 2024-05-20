@@ -15,6 +15,7 @@ export interface CartItemType {
   quantity: number;
   price: number;
   tva: number
+  id:number
 }
 
 const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTableSelect }) => {
@@ -76,7 +77,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
   }
 
   return (
-    <div className="carts flex-grow-1 d-flex flex-column justify-content-between bg-dark">
+    <div className="carts d-flex flex-column justify-content-between bg-dark">
       <div>
         <div className='d-flex flex-column'>
           <TableSelection onTableSelect={handleTableSelect} />

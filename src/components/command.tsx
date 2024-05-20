@@ -39,15 +39,17 @@ export default function Command() {
             return updatedCart;
         });
     };
-    const addToCart = (product: string, quantity: number, price: number, tva: number) => {
+
+    const addToCart = (product: string, quantity: number, price: number, tva: number, id:number) => {
         setCart((prevCart) => {
             const updatedCart = { ...prevCart };
 
             if (updatedCart[ product ]) {
                 updatedCart[ product ].quantity += quantity;
                 updatedCart[ product ].price = price;
+                updatedCart[ product].id = id;
             } else {
-                updatedCart[ product ] = { quantity, price, tva };
+                updatedCart[ product ] = { quantity, price, tva, id };
             }
 
             if (quantity === 0) {
@@ -60,7 +62,7 @@ export default function Command() {
     return (
             <div className="min-vh-100 d-flex flex-column flex-sm-row payment-container">
                     <Carts cart={cart} updateQuantity={updateCart} initialQuantity={initialQuantity} onTableSelect={handleTableSelect} />
-                <div className="d-flex justify-content-between flex-column bg-dark">
+                <div className="d-flex flex-grow-1 justify-content-between flex-column bg-dark">
                     <Categories addToCart={addToCart} cart={cart} />
                     <div className="options bg-dark text-light text-center fw-bold p-2">
                         <Link to={'/settings'}>Configuration</Link>

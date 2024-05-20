@@ -168,14 +168,14 @@ justify-content: center;
 }
 
 .custom-tabs .nav-link {
-  background-color: $secondary; /* Couleur de fond personnalisée */
+  background-color: $secondary; 
   color: white;
-  border: 1px solid white; /* Couleur du texte personnalisée */
+  border: 1px solid white; 
 }
 
 .custom-tabs .nav-link.active {
-  background-color: $primary; /* Couleur de fond personnalisée pour l'onglet actif */
-  color: $white; /* Couleur du texte personnalisée pour l'onglet actif */
+  background-color: $primary; 
+  color: $white;
 }
 
 .nav-selected{

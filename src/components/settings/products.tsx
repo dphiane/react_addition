@@ -33,7 +33,7 @@ function Products() {
   const [productToEdit, setProductsToEdit] = useState<Products | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [errors, setErrors] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // État de chargement
+  const [loading, setLoading] = useState<boolean>(false);
 
   const itemsPerPage = 15;
   const indexOfLastItem = currentPage * itemsPerPage;
