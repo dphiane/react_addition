@@ -42,8 +42,10 @@ const Payment = () => {
 
     const saveInvoice = async () => {
         const invoiceData = {
-            date: new Date(),
-            products: products.map(product => ({ id: product.id })), 
+            products: products.map(product => ({ 
+                id: product.id ,
+                quantity: product.quantity, 
+            })), 
             tva: calculateTotalTVA(products),
             total: totalCart,
             payments: payments.map(payment => ({

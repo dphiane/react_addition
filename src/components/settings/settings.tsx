@@ -6,7 +6,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Products from './products';
 import SettingsCategory from './category';
 import Tva from './tva';
-
+import Invoices from './invoice';
 
 function Settings() {
   return (
@@ -26,7 +26,7 @@ function Settings() {
           <Tva></Tva>
         </Tab>
         <Tab eventKey="tickets" title="Tickets">
-
+          <Invoices></Invoices>
         </Tab>
         <Tab eventKey="cashRegister" title="Journal de caisse">
 

@@ -258,7 +258,7 @@ function Products() {
         tvas={tvas} categories={categories} 
         resetProductToUpdate={resetProductToUpdate}
           />
-          {filteredProducts.length > 15 && (
+          {filteredProducts.length > itemsPerPage && (
             <ul className="pagination">
               {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (product, index) => (
                 <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
