@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import "./styles/index.css";
+import 'react-datepicker/dist/react-datepicker.css';
 
 import Command from "./components/command";
 import LoginForm from "./components/login";

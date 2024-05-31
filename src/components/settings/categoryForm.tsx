@@ -8,63 +8,71 @@ interface Category {
 
 interface CategoryFormProps {
   categoryToUpdate: Category | null;
-  onSubmit: (updatedCategoryName: string) => void;
-  onAddCategory: (newCategoryName: string) => void; // Ajouter la fonction de mise à jour des catégories comme prop
+  onUpdateCategory: (updatedCategoryName: string) => void;
+  onAddCategory: (newCategoryName: string) => void;
+  setShowFormModal: (value: boolean) => void;
+  showFormModal: boolean;
+  resetCategoryToEdit: () => void;
+  formErrors: string;
 }
 
-const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onSubmit, onAddCategory }) => {
-  const [categoryName, setCategoryName] = useState<string>('');
-  const [showFormModal, setShowFormModal] = useState<boolean>(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
+const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateCategory, onAddCategory, showFormModal, setShowFormModal, resetCategoryToEdit, formErrors }) => {
+  const [ categoryName, setCategoryName ] = useState<string>('');
+  const [ showConfirmationModal, setShowConfirmationModal ] = useState<boolean>(false);
+  const [ isSubmitted,setIsSubmitted]= useState<boolean>(false);
 
   useEffect(() => {
     if (categoryToUpdate) {
       setCategoryName(categoryToUpdate.name);
       setShowFormModal(true);
     }
-  }, [categoryToUpdate]);
+  }, [ categoryToUpdate ]);
+
+  useEffect(()=>{
+    if(isSubmitted && formErrors.length === 0 ){
+      handleCloseFormModal();
+      setShowConfirmationModal(true);
+    } 
+  },[isSubmitted,formErrors])
 
   const handleCloseFormModal = () => {
     setShowFormModal(false);
+    resetCategoryToEdit();
   };
 
   const handleCloseConfirmationModal = () => {
     setShowConfirmationModal(false);
     setCategoryName('');
+    resetCategoryToEdit();
   }
-
-  const handleShowFormModal = () => setShowFormModal(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(categoryName)
+    setIsSubmitted(true);
     if (categoryName.trim() !== '') {
       if (categoryToUpdate) {
-        // Si une catégorie est mise à jour, appeler la fonction onSubmit
-        onSubmit(categoryName);
-        handleCloseFormModal();
-        setShowConfirmationModal(true);
+        // Si une catégorie est mise à jour, appeler la fonction onUpdateCategory
+        onUpdateCategory(categoryName);
       } else {
         // Sinon, ajouter une nouvelle catégorie en appelant la fonction onAddCategory
         onAddCategory(categoryName);
-        handleCloseFormModal();
-        setShowConfirmationModal(true);
       }
     }
   };
 
   return (
-    <div className='d-flex justify-content-end'>
-      <Button className='m-2' onClick={handleShowFormModal}>
-        Ajouter une catégorie
-      </Button>
-
+    <>
       <Modal show={showFormModal} onHide={handleCloseFormModal}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>{categoryToUpdate ? 'Modifier une catégorie' : 'Ajouter une catégorie'}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className='bg-dark'>
+        <Modal.Body className='bg-dark rounded-bottom'>
           <Form onSubmit={handleSubmit}>
+            {formErrors && (
+              <p className="alert alert-danger" role="alert">
+                {formErrors}
+              </p>
+            )}
             <Form.Group controlId="categoryName">
               <Form.Control
                 type="text"
@@ -83,7 +91,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onSubmit,
       </Modal>
 
       <Modal show={showConfirmationModal} onHide={handleCloseConfirmationModal}>
-        <Modal.Header closeButton  closeVariant="white" className='bg-dark'>
+        <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>Confirmation</Modal.Title>
         </Modal.Header>
         <Modal.Body className='bg-dark'>
@@ -95,7 +103,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onSubmit,
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </>
   );
 };
 

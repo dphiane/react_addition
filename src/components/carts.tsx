@@ -15,6 +15,7 @@ export interface CartItemType {
   quantity: number;
   price: number;
   tva: number
+  id:number
 }
 
 const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTableSelect }) => {
@@ -75,18 +76,17 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
     localStorage.setItem(`cart_${selectedTable}`, JSON.stringify(cart));
   }
 
-
   return (
     <div className="carts d-flex flex-column justify-content-between bg-dark">
       <div>
         <div className='d-flex flex-column'>
           <TableSelection onTableSelect={handleTableSelect} />
-          <p className='text-center'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's' : ''}</p>
+          <p className='text-center m-0'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's' : ''}</p>
           <hr />
         </div>
         <div>
           <ul>
-            {Object.entries(cart).map(([ product, { quantity, price , comment } ]) => (
+            {Object.entries(cart).map(([ product, { quantity, price  } ]) => (
               <li className="edit-product position-relative m-1" key={product} onClick={() => handleOpenModal(product)}>
                 <span className='span-text'>{quantity} x {product} </span>
                 <span className="position-absolute end-0 me-2">{price * quantity} €</span>
@@ -96,6 +96,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
         </div>
       </div>
       <div>
+      <hr />
         <p className='position-relative m-1'>TVA 
           <span className='position-absolute end-0 me-2'>{calculateTotalTVA(cart)} €</span></p>
         <p className='position-relative m-1'>Total HT 

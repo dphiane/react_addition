@@ -1,18 +1,19 @@
 import React from 'react';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+
 import Products from './products';
-import SettingsCategory from './categorySettings';
+import SettingsCategory from './category';
 import Tva from './tva';
-import { Link } from "react-router-dom";
+import Invoices from './invoice';
 
 function Settings() {
   return (
-    <>
+    <div className=' min-vh-100 '>
       <Tabs
         defaultActiveKey="products"
         id="settings-tabs"
-        className="custom-tabs bg-dark position-relative"
+        className="custom-tabs bg-dark"
       >
         <Tab eventKey="products" title="Articles">
           <Products></Products>
@@ -24,14 +25,13 @@ function Settings() {
           <Tva></Tva>
         </Tab>
         <Tab eventKey="tickets" title="Tickets">
-
+          <Invoices></Invoices>
         </Tab>
         <Tab eventKey="cashRegister" title="Journal de caisse">
 
         </Tab>
       </Tabs>
-      <Link to={"/"}><button className="btn btn-secondary m-2 position-absolute bottom-0 start-0">Retour</button></Link>
-    </>
+    </div>
   );
 }
 
