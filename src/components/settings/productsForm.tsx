@@ -10,15 +10,16 @@ interface ProductsFormProps {
   tvas: Tva[];
   categories: CategoryInterface[];
   resetProductToUpdate: () => void;
+  showFormModal: boolean;
+  setShowFormModal: (value:boolean)=>void
 }
 
-const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProduct, onAddProducts, tvas, categories, resetProductToUpdate }) => {
+const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProduct, onAddProducts, tvas, categories, resetProductToUpdate,showFormModal,setShowFormModal }) => {
 
   const [ productName, setProductsName ] = useState<string>('');
   const [ selectedTva, setSelectedTva ] = useState<string | undefined>("1");
   const [ selectedCategory, setSelectedCategory ] = useState<string | undefined>('1');
   const [ price, setPrice ] = useState<string>('');
-  const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
   const [ showConfirmationModal, setShowConfirmationModal ] = useState<boolean>(false);
   const [ formErrors, setFormErrors ] = useState<string[]>([]);
 
@@ -73,7 +74,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
     setShowConfirmationModal(false);
   }
 
-  const handleShowFormModal = () => setShowFormModal(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -100,11 +100,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
 
 
   return (
-    <div className='position-absolute bottom-0 end-0 m-2'>
-      <Button onClick={handleShowFormModal}>
-        Ajouter un article
-      </Button>
-
+    <>
       <Modal show={showFormModal} onHide={handleCloseFormModal}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>{productsToUpdate ? 'Modifier un article' : 'Ajouter un article'}</Modal.Title>
@@ -190,7 +186,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
@@ -11,12 +12,13 @@ interface Tva {
 }
 
 function Tva() {
-  const [tvas, setTvas] = useState<Tva[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [tvaToDelete, setTvaToDelete] = useState<Tva | null>(null);
-  const [tvaToEdit, setTvaToEdit] = useState<Tva | null>(null);
-  const [existingTva, setExistingTva] = useState<number | null>(null); // Nouvel état pour stocker le montant de TVA existant
+  const [ tvas, setTvas ] = useState<Tva[]>([]);
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ showDeleteConfirmation, setShowDeleteConfirmation ] = useState(false);
+  const [showFormModal,setShowFormModal]=useState(false);
+  const [ tvaToDelete, setTvaToDelete ] = useState<Tva | null>(null);
+  const [ tvaToEdit, setTvaToEdit ] = useState<Tva | null>(null);
+  const [ existingTva, setExistingTva ] = useState<number | null>(null); // Nouvel état pour stocker le montant de TVA existant
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -30,7 +32,7 @@ function Tva() {
   const fetchTvas = async () => {
     try {
       const response = await axios.get('https://localhost:8000/api/tvas');
-      setTvas(response.data["hydra:member"]);
+      setTvas(response.data[ "hydra:member" ]);
     } catch (error) {
       console.error('Erreur lors de la récupération des taxes:', error);
     }
@@ -40,7 +42,7 @@ function Tva() {
     try {
       await axios.delete(`https://localhost:8000/api/tvas/${tvaId}`);
       setTvas(tvas.filter(tva => tva.id !== tvaId));
-      setShowModal(false);
+      setShowDeleteConfirmation(false);
     } catch (error) {
       console.error('Erreur lors de la suppression de la taxe:', error);
     }
@@ -54,7 +56,7 @@ function Tva() {
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
+    setShowDeleteConfirmation(false);
     setTvaToDelete(null);
     setExistingTva(null);
   };
@@ -80,13 +82,13 @@ function Tva() {
   };
 
   const handleAddTva = async (newTva: number) => {
-    if(newTva === undefined){
+    if (newTva === undefined) {
       return;
     }
     if (tvas.some(tva => tva.tva === newTva)) {
       setExistingTva(newTva);
-      setShowModal(true);
-      return; 
+      setShowDeleteConfirmation(true);
+      return;
     }
 
     try {
@@ -95,14 +97,14 @@ function Tva() {
         { tva: newTva },
         { headers: { 'Content-Type': 'application/ld+json' } }
       );
-      setTvas([...tvas, response.data]);
+      setTvas([ ...tvas, response.data ]);
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la taxe:', error);
     }
   };
 
   return (
-    <div className="bg-dark">
+    <div className="bg-dark pb-2">
       <Table striped bordered hover variant="dark">
         <thead>
           <tr>
@@ -115,19 +117,21 @@ function Tva() {
               <td className="d-flex justify-content-between align-items-center">{tva.tva}%
                 <span>
                   <i className="fa-solid fa-pen-to-square m-2 text-warning"
-                     onClick={() => handleEditTva(tva.id)}></i>
+                    onClick={() => handleEditTva(tva.id)}></i>
                   <i className="fa-solid fa-trash m-2 text-danger"
-                     onClick={() => { setTvaToDelete(tva); setShowModal(true);}}></i>
+                    onClick={() => { setTvaToDelete(tva); setShowDeleteConfirmation(true); }}></i>
                 </span>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <TvaForm onAddTva={handleAddTva} tvaToUpdate={tvaToEdit} onSubmit={handleUpdateTva} existingTva={existingTva} />
+      <TvaForm onAddTva={handleAddTva} tvaToUpdate={tvaToEdit} onSubmit={handleUpdateTva} existingTva={existingTva} showFormModal={showFormModal} setShowFormModal={setShowFormModal} />
 
       <nav>
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-between ms-2 me-2">
+          <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
+
           {tvas.length > 10 && (
             <ul className="pagination">
               {Array.from({ length: Math.ceil(tvas.length / itemsPerPage) }, (_, index) => (
@@ -139,15 +143,16 @@ function Tva() {
               ))}
             </ul>
           )}
+          <Button onClick={()=>setShowFormModal(true)}>Ajouter une TVA</Button>
         </div>
       </nav>
 
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton  closeVariant="white" className='bg-dark'>
+      <Modal show={showDeleteConfirmation} onHide={handleCloseModal}>
+        <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>{existingTva ? 'TVA déjà existante' : 'Confirmer la suppression'}</Modal.Title>
         </Modal.Header>
         <Modal.Body className='bg-dark'>
-          {existingTva ? `Le montant de TVA ${existingTva} existe déjà.` : `Êtes-vous sûr de vouloir supprimer la taxe ${tvaToDelete?.tva} ?`}
+          {existingTva ? `Le montant de TVA ${existingTva} existe déjà.` : `Êtes-vous sûr de vouloir supprimer la taxe ${tvaToDelete?.tva}% ?`}
         </Modal.Body>
         <Modal.Footer className='bg-dark'>
           <Button variant="secondary" onClick={handleCloseModal}>

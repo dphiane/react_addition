@@ -285,7 +285,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
             </ul>
 
             <div className="d-flex justify-content-end">
-              <Button className='m-2' variant="primary" type="submit" disabled={loading}>
+              <Button className='mt-3' variant="primary" type="submit" disabled={loading}>
                 Modifier
               </Button>
             </div>

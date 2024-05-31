@@ -4,6 +4,7 @@ import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ProductsForm from "./productsForm";
+import { Link } from "react-router-dom";
 
 export interface Products {
   id?: number;
@@ -24,16 +25,17 @@ export interface CategoryInterface {
 }
 
 function Products() {
-  const [tvas, setTvas] = useState<Tva[]>([]);
-  const [categories, setCategories] = useState<CategoryInterface[]>([]);
-  const [products, setProducts] = useState<Products[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [productToDelete, setProductsToDelete] = useState<Products | null>(null);
-  const [productToEdit, setProductsToEdit] = useState<Products | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [errors, setErrors] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [ tvas, setTvas ] = useState<Tva[]>([]);
+  const [ categories, setCategories ] = useState<CategoryInterface[]>([]);
+  const [ products, setProducts ] = useState<Products[]>([]);
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ showModal, setShowModal ] = useState(false);
+  const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
+  const [ productToDelete, setProductsToDelete ] = useState<Products | null>(null);
+  const [ productToEdit, setProductsToEdit ] = useState<Products | null>(null);
+  const [ searchTerm, setSearchTerm ] = useState<string>('');
+  const [ errors, setErrors ] = useState<string | null>(null);
+  const [ loading, setLoading ] = useState<boolean>(false);
 
   const itemsPerPage = 15;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -51,7 +53,7 @@ function Products() {
     setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/tvas');
-      setTvas(response.data["hydra:member"]);
+      setTvas(response.data[ "hydra:member" ]);
     } catch (error) {
       console.error('Erreur lors de la récupération des taxes:', error);
       setErrors('Une erreur s\'est produite lors du chargement des taxes');
@@ -64,7 +66,7 @@ function Products() {
     setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/categories');
-      setCategories(response.data["hydra:member"]);
+      setCategories(response.data[ "hydra:member" ]);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
       setErrors('Erreur lors de la récupération des catégories');
@@ -77,7 +79,7 @@ function Products() {
     setLoading(true);
     try {
       const response = await axios.get('https://localhost:8000/api/products');
-      const products: Products[] = response.data["hydra:member"].reverse(); // Reverse the array to display in descending order
+      const products: Products[] = response.data[ "hydra:member" ].reverse(); // Reverse the array to display in descending order
       setProducts(products);
     } catch (error) {
       console.error('Erreur lors de la récupération des articles:', error);
@@ -126,13 +128,13 @@ function Products() {
           console.error("Le produit à mettre à jour n'existe pas.");
           return;
         }
-  
+
         const responseUpdate = await axios.put(
           `https://localhost:8000/api/products/${productToEdit.id}`,
           updatedProduct,
           { headers: { 'Content-Type': 'application/ld+json' } }
         );
-  
+
         const updatedProductData = responseUpdate.data;
         setProducts(products.map(product =>
           product.id === updatedProductData.id ? updatedProductData : product
@@ -148,7 +150,7 @@ function Products() {
       }
     }
   };
-  
+
 
   const handleAddProducts = async (newProduct: Products) => {
     setLoading(true);
@@ -159,7 +161,7 @@ function Products() {
         { headers: { 'Content-Type': 'application/ld+json' } } // Utilisez application/json au lieu de application/ld+json si le serveur l'attend
       );
       const addedProduct = response.data;
-      setProducts([ addedProduct,...products]); // Ajouter le produit retourné par le serveur
+      setProducts([ addedProduct, ...products ]); // Ajouter le produit retourné par le serveur
       handleCloseModal();
     } catch (error) {
       console.error("Erreur lors de l'ajout de l'article:", error);
@@ -199,7 +201,7 @@ function Products() {
   const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="bg-dark pb-5 position-relative">
+    <div className="bg-dark pb-2">
       {errors && (
         <div className="alert alert-danger" role="alert">
           {errors}
@@ -250,14 +252,18 @@ function Products() {
         </Table>
       )}
       <nav>
-        <div className="d-flex justify-content-center pb-2">
-      <ProductsForm 
-        onAddProducts={handleAddProducts} 
-        productsToUpdate={productToEdit} 
-        editProduct={handleUpdateProducts} 
-        tvas={tvas} categories={categories} 
-        resetProductToUpdate={resetProductToUpdate}
-          />
+
+        <ProductsForm
+          onAddProducts={handleAddProducts}
+          productsToUpdate={productToEdit}
+          editProduct={handleUpdateProducts}
+          tvas={tvas} categories={categories}
+          resetProductToUpdate={resetProductToUpdate}
+          showFormModal={showFormModal}
+          setShowFormModal={setShowFormModal}
+        />
+        <div className="d-flex justify-content-between ms-2 me-2">
+          <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
           {filteredProducts.length > itemsPerPage && (
             <ul className="pagination">
               {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (product, index) => (
@@ -269,6 +275,7 @@ function Products() {
               ))}
             </ul>
           )}
+          <Button onClick={()=>setShowFormModal(true)}>Ajouter un article</Button>
         </div>
       </nav>
 

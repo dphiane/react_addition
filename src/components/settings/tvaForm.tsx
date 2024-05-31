@@ -10,12 +10,13 @@ interface TvaFormProps { // Correction de la casse du nom de l'interface
   tvaToUpdate: Tva | null;
   onSubmit: (updatedTva: number) => void;
   onAddTva: (newTva: number) => void;
-  existingTva: number | null; 
+  existingTva: number | null;
+  showFormModal: boolean;
+  setShowFormModal:(value:boolean)=>void;
 }
 
-const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, existingTva }) => {
+const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, existingTva,setShowFormModal,showFormModal }) => {
   const [tva, setTva] = useState<number>();
-  const [showFormModal, setShowFormModal] = useState<boolean>(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
     setTva(0);
   }
 
-  const handleShowFormModal = () => setShowFormModal(true);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,11 +55,7 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
   };
 
   return (
-    <div className='d-flex justify-content-end'>
-      <Button className='m-2' onClick={handleShowFormModal}>
-        Ajouter une TVA
-      </Button>
-
+    <>
       <Modal show={showFormModal} onHide={handleCloseFormModal}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>{tvaToUpdate ? 'Modifier une taxe' : 'Ajouter une taxe'}</Modal.Title>
@@ -98,7 +94,7 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </>
   );
 };
 
