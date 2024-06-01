@@ -4,7 +4,7 @@ import Calculator from './calculator';
 import ClosePayment from "./modal/closePayment";
 import { calculateTotalPrice, calculateTotalTVA } from "../functions/cart";
 import axios from 'axios';
-import { Products } from "./settings/products";
+import { Products } from "./settings/products/products";
 
 const Payment = () => {
     const [payments, setPayments] = useState<{ amount: number, paymentMethod: string }[]>([]);

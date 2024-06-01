@@ -3,7 +3,7 @@ import { Form, Button, Modal } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
 import { Invoice, InvoiceProducts } from "./invoice";
-import { Products } from "./products";
+import { Products } from "./products/products";
 
 interface InvoiceProps {
   editInvoice: Invoice | null;
@@ -21,6 +21,7 @@ interface Payments {
 const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshInvoices }) => {
   const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
   const [ showConfirmationModal, setShowConfirmationModal ] = useState<boolean>(false);
+  const [ showDeleteModal, setShowDeleteModal ] = useState<boolean>(false);
   const [ formErrors, setFormErrors ] = useState<string[]>([]);
   const [ products, setProducts ] = useState<(Products & { quantity: number })[]>([]);
   const [ loading, setLoading ] = useState(false);
@@ -36,7 +37,6 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
 
   useEffect(() => {
     if (editInvoice) {
-      console.log(editInvoice)
       const invoiceProducts = editInvoice.invoiceProducts;
       setShowFormModal(true);
       setDirty(false);
@@ -196,10 +196,23 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
     }
   };
   
-
   const cancelNewPaymentMethod = (index: number) => {
     setRemainder(remainder + newPayments[ index ].amount);
     setNewPayments(newPayments.filter((_, i) => i !== index));
+  }
+
+  const handleDeleteInvoice = async (invoiceId:number) =>{
+    setLoading(true);
+    try{
+      await axios.delete(`https://localhost:8000/api/invoices/${invoiceId}`);
+      refreshInvoices();
+      setShowConfirmationModal(true);
+      handleCloseFormModal()
+    }catch{
+      setFormErrors(previousError => [...previousError,'Erreur lors de la suppression de la facture'])
+    }finally{
+      setLoading(false);
+    }
   }
 
   return (
@@ -284,7 +297,10 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
               <li className="position-relative fw-bold">Total TTC <span className="position-absolute end-0 me-2">{editInvoice?.total}€</span></li>
             </ul>
 
-            <div className="d-flex justify-content-end">
+            <div className="d-flex justify-content-between">
+            <Button className='mt-3' variant="danger" onClick={()=>setShowDeleteModal(true)}>
+                Supprimer
+              </Button>
               <Button className='mt-3' variant="primary" type="submit" disabled={loading}>
                 Modifier
               </Button>
@@ -302,6 +318,23 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
         </Modal.Body>
         <Modal.Footer className='bg-dark'>
           <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>
+            Fermer
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showDeleteModal} onHide={handleCloseFormModal} backdrop="static">
+        <Modal.Header closeVariant="white" className='bg-dark'>
+          <Modal.Title>Confirmation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='bg-dark'>
+          Souhaitez-vous vraiment supprimer la facture N°{editInvoice?.invoiceNumber} ?
+        </Modal.Body>
+        <Modal.Footer className='bg-dark d-flex justify-content-between'>
+          <Button variant="danger" onClick={()=>handleDeleteInvoice(editInvoice?.id!)}>
+            Supprimer
+          </Button>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Fermer
           </Button>
         </Modal.Footer>

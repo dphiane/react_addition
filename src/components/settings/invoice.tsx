@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import DatePicker, { registerLocale } from "react-datepicker";
-import fr from "date-fns/locale/fr";
 import "react-datepicker/dist/react-datepicker.css";
+import fr from "date-fns/locale/fr";
 import axios from "axios";
 import InvoiceForm from "./invoiceForm";
 
@@ -57,7 +58,6 @@ const Invoices = () => {
         } catch (error) {
             console.error('Erreur lors de la récupération des factures', error);
             setErrors('Une erreur s\'est produite lors du chargement des factures');
-            setTimeout(() => setErrors(null), 5000);  // Clear error after 5 seconds
         } finally {
             setLoading(false);
         }
@@ -82,7 +82,7 @@ const Invoices = () => {
         fetchInvoices();
     };
 
-    const itemsPerPage = 15;
+    const itemsPerPage = 20;
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredInvoices.slice(indexOfFirstItem, indexOfLastItem);
@@ -161,6 +161,10 @@ const Invoices = () => {
                         </tbody>
                     </Table>
                     <InvoiceForm editInvoice={invoiceToEdit} resetForm={resetForm} refreshInvoices={refreshInvoices} />
+                    
+                    <div className="d-flex justify-content-center position-relative">
+                    <Link to={"/"}><button className="btn btn-secondary position-absolute start-0 ms-2">Retour</button></Link>
+
                     {filteredInvoices.length > itemsPerPage && (
                         <ul className="pagination">
                             {Array.from({ length: Math.ceil(filteredInvoices.length / itemsPerPage) }, (_, index) => (
@@ -172,6 +176,7 @@ const Invoices = () => {
                             ))}
                         </ul>
                     )}
+                    </div>
                 </div>
             )}
         </>

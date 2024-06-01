@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import ProductsForm from "./productsForm";
 import { Link } from "react-router-dom";
+import Deleted from "./modals/deleted";
+import ConfirmDelete from "./modals/confirmDelete";
+
 
 export interface Products {
   id?: number;
@@ -29,8 +31,10 @@ function Products() {
   const [ categories, setCategories ] = useState<CategoryInterface[]>([]);
   const [ products, setProducts ] = useState<Products[]>([]);
   const [ currentPage, setCurrentPage ] = useState(1);
-  const [ showModal, setShowModal ] = useState(false);
+  const [ showAddedOrModifiedModal, setShowAddedOrModifiedModal ] = useState(true);
   const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
+  const [ showDeletedModal, setShowDeletedModal ] = useState<boolean>(false);
+
   const [ productToDelete, setProductsToDelete ] = useState<Products | null>(null);
   const [ productToEdit, setProductsToEdit ] = useState<Products | null>(null);
   const [ searchTerm, setSearchTerm ] = useState<string>('');
@@ -94,7 +98,8 @@ function Products() {
     try {
       await axios.delete(`https://localhost:8000/api/products/${productId}`);
       setProducts(products.filter(products => products.id !== productId));
-      setShowModal(false);
+      setShowAddedOrModifiedModal(false);
+      setShowDeletedModal(true);
     } catch (error) {
       console.error('Erreur lors de la suppression de la catégorie:', error);
       setErrors('Erreur lors de la suppression de la catégorie');
@@ -114,8 +119,8 @@ function Products() {
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleCloseModalAddedOrModified = () => {
+    setShowAddedOrModifiedModal(false);
     setProductsToDelete(null);
   };
 
@@ -141,7 +146,7 @@ function Products() {
         ));
         console.log(`L'article mis à jour avec succès:`, updatedProductData);
         setProductsToEdit(null);
-        handleCloseModal();
+        handleCloseModalAddedOrModified();
       } catch (error) {
         console.error("Erreur lors de la mise à jour de l'article:", error);
         setErrors('Erreur lors de la mise à jour de l\'article');
@@ -150,7 +155,6 @@ function Products() {
       }
     }
   };
-
 
   const handleAddProducts = async (newProduct: Products) => {
     setLoading(true);
@@ -162,7 +166,7 @@ function Products() {
       );
       const addedProduct = response.data;
       setProducts([ addedProduct, ...products ]); // Ajouter le produit retourné par le serveur
-      handleCloseModal();
+      handleCloseModalAddedOrModified();
     } catch (error) {
       console.error("Erreur lors de l'ajout de l'article:", error);
       setErrors("Erreur lors de l'ajout de l'article:");
@@ -201,7 +205,7 @@ function Products() {
   const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
-    <div className="bg-dark pb-2">
+    <div className="bg-dark pb-2 ">
       {errors && (
         <div className="alert alert-danger" role="alert">
           {errors}
@@ -244,15 +248,14 @@ function Products() {
                   <i className="fa-solid fa-pen-to-square m-1 text-warning"
                     onClick={() => handleEditProducts(products.id!)}></i>
                   <i className="fa-solid fa-trash text-danger m-1 "
-                    onClick={() => { setProductsToDelete(products); setShowModal(true); }}></i>
+                    onClick={() => { setProductsToDelete(products); setShowAddedOrModifiedModal(true); }}></i>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       )}
-      <nav>
-
+      
         <ProductsForm
           onAddProducts={handleAddProducts}
           productsToUpdate={productToEdit}
@@ -277,24 +280,10 @@ function Products() {
           )}
           <Button onClick={()=>setShowFormModal(true)}>Ajouter un article</Button>
         </div>
-      </nav>
+      <ConfirmDelete show={showAddedOrModifiedModal} onHide={handleCloseModalAddedOrModified} productToDelete={productToDelete} handleDeleteProducts={handleDeleteProducts}/>
+      <Deleted handleShow={showDeletedModal} handleClose={()=>setShowDeletedModal(false)} articleName={productToDelete?.name} />
 
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton className="bg-dark" closeVariant="white">
-          <Modal.Title>Confirmer la suppression</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="bg-dark">
-          Êtes-vous sûr de vouloir supprimer la catégorie {productToDelete?.name} ?
-        </Modal.Body>
-        <Modal.Footer className="bg-dark">
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Annuler
-          </Button>
-          <Button variant="danger" onClick={() => handleDeleteProducts(productToDelete?.id!)}>
-            Supprimer
-          </Button>
-        </Modal.Footer>
-      </Modal>
+
     </div>
   );
 }

@@ -11,10 +11,10 @@ interface ProductsFormProps {
   categories: CategoryInterface[];
   resetProductToUpdate: () => void;
   showFormModal: boolean;
-  setShowFormModal: (value:boolean)=>void
+  setShowFormModal: (value: boolean) => void
 }
 
-const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProduct, onAddProducts, tvas, categories, resetProductToUpdate,showFormModal,setShowFormModal }) => {
+const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProduct, onAddProducts, tvas, categories, resetProductToUpdate, showFormModal, setShowFormModal }) => {
 
   const [ productName, setProductsName ] = useState<string>('');
   const [ selectedTva, setSelectedTva ] = useState<string | undefined>("1");
@@ -186,6 +186,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
           </Button>
         </Modal.Footer>
       </Modal>
+
     </>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 
-import Products from './products';
+import Products from './products/products';
 import SettingsCategory from './category';
 import Tva from './tva';
 import Invoices from './invoice';
