@@ -31,7 +31,7 @@ function Products() {
   const [ categories, setCategories ] = useState<CategoryInterface[]>([]);
   const [ products, setProducts ] = useState<Products[]>([]);
   const [ currentPage, setCurrentPage ] = useState(1);
-  const [ showAddedOrModifiedModal, setShowAddedOrModifiedModal ] = useState(true);
+  const [ showAddedOrModifiedModal, setShowAddedOrModifiedModal ] = useState(false);
   const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
   const [ showDeletedModal, setShowDeletedModal ] = useState<boolean>(false);
 

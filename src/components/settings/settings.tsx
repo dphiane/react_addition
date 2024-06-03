@@ -3,8 +3,8 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 
 import Products from './products/products';
-import SettingsCategory from './category';
-import Tva from './tva';
+import SettingsCategory from './categories/category';
+import Tva from './tva/tva';
 import Invoices from './invoice';
 
 function Settings() {

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import CategoryForm from "./categoryForm";
+import Deleted from "./modals/deleted";
 
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import ConfirmDelete from "./modals/confirmDelete";
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
 }
@@ -15,8 +17,9 @@ interface Category {
 const categorySettings = () => {
   const [ categories, setCategories ] = useState<Category[]>([]);
   const [ currentPage, setCurrentPage ] = useState(1);
-  const [ showConfirmationModal, setShowConfirmationModal ] = useState(false);
+  const [ showConfirmDeleteModal, setShowConfirmDeleteModal ] = useState(false);
   const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
+  const [ showDeletedModal, setShowDeletedModal] = useState<boolean>(false);
   const [ formErrors, setFormErrors ] = useState<string>('');
   const [ categoryToDelete, setCategoryToDelete ] = useState<Category | null>(null);
   const [ categoryToEdit, setCategoryToEdit ] = useState<Category | null>(null);
@@ -44,7 +47,8 @@ const categorySettings = () => {
     try {
       await axios.delete(`https://localhost:8000/api/categories/${categoryId}`);
       setCategories(categories.filter(category => category.id !== categoryId));
-      setShowConfirmationModal(false);
+      setShowConfirmDeleteModal(false);
+      setShowDeletedModal(true);
     } catch (error) {
       console.error('Erreur lors de la suppression de la catégorie:', error);
     }
@@ -60,7 +64,7 @@ const categorySettings = () => {
   };
 
   const handleCloseModal = () => {
-    setShowConfirmationModal(false);
+    setShowConfirmDeleteModal(false);
     setCategoryToDelete(null);
   };
 
@@ -112,6 +116,10 @@ const categorySettings = () => {
     return !categories.some(category => category.name === categoryName);
   }
 
+  const handleCloseDeletedModal = () =>{
+    setShowDeletedModal(false);
+  }
+
   return (
     <div className="bg-dark pb-2">
       <Table striped bordered hover variant="dark">
@@ -127,7 +135,7 @@ const categorySettings = () => {
                 {category.name}
                 <span>
                   <i className="fa-solid fa-pen-to-square m-2 text-warning" onClick={() => handleEditCategory(category.id)}></i>
-                  <i className="fa-solid fa-trash m-2 text-danger" onClick={() => { setCategoryToDelete(category); setShowConfirmationModal(true); }}></i>
+                  <i className="fa-solid fa-trash m-2 text-danger" onClick={() => { setCategoryToDelete(category); setShowConfirmDeleteModal(true); }}></i>
                 </span>
               </td>
             </tr>
@@ -162,22 +170,8 @@ const categorySettings = () => {
         </div>
       </nav>
 
-      <Modal show={showConfirmationModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton className="bg-dark" closeVariant="white">
-          <Modal.Title>Confirmer la suppression</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="bg-dark">
-          Êtes-vous sûr de vouloir supprimer la catégorie {categoryToDelete?.name} ?
-        </Modal.Body>
-        <Modal.Footer className="bg-dark">
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Annuler
-          </Button>
-          <Button variant="danger" onClick={() => handleDeleteCategory(categoryToDelete?.id!)}>
-            Supprimer
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Deleted show={showDeletedModal} onHide={handleCloseDeletedModal} categoryName={categoryToDelete?.name}></Deleted>
+        <ConfirmDelete show={showConfirmDeleteModal} onHide={()=>setShowConfirmDeleteModal} categoryToDelete={categoryToDelete} handleDeleteCategory={handleDeleteCategory} />
     </div>
   );
 }
