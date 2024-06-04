@@ -16,7 +16,7 @@ return(
       <Modal.Title>Confirmer la suppression</Modal.Title>
     </Modal.Header>
     <Modal.Body className="bg-dark">
-      Êtes-vous sûr de vouloir supprimer la catégorie {productToDelete?.name} ?
+      Êtes-vous sûr de vouloir supprimer l'article {productToDelete?.name} ?
     </Modal.Body>
     <Modal.Footer className="bg-dark">
       <Button variant="secondary" onClick={onHide}>

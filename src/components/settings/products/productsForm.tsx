@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal, FormControl } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { Products, Tva, CategoryInterface } from './products';
+import { ProductsInterface, TvaInterface, CategoryInterface } from '../../types';
+
 
 interface ProductsFormProps {
-  productsToUpdate: Products | null;
-  editProduct: (updatedProduct: Products) => void;
-  onAddProducts: (newProduct: Products) => Promise<void>;
-  tvas: Tva[];
+  productsToUpdate: ProductsInterface | null;
+  editProduct: (updatedProduct: ProductsInterface) => void;
+  onAddProducts: (newProduct: ProductsInterface) => Promise<void>;
+  tvas: TvaInterface[];
   categories: CategoryInterface[];
   resetProductToUpdate: () => void;
   showFormModal: boolean;
@@ -20,7 +21,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
   const [ selectedTva, setSelectedTva ] = useState<string | undefined>("1");
   const [ selectedCategory, setSelectedCategory ] = useState<string | undefined>('1');
   const [ price, setPrice ] = useState<string>('');
-  const [ showConfirmationModal, setShowConfirmationModal ] = useState<boolean>(false);
   const [ formErrors, setFormErrors ] = useState<string[]>([]);
 
   useEffect(() => {
@@ -70,16 +70,13 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
     resetAll();
   };
 
-  const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-  }
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isValid = validateForm();
     if (isValid) {
-      const newProduct: Products = {
+      const product: ProductsInterface = {
         id: productsToUpdate?.id,
         name: productName,
         tva: '/api/tvas/' + selectedTva,
@@ -87,17 +84,15 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
         price: parseFloat(price),
       };
       if (productsToUpdate) {
-        editProduct(newProduct);
+        editProduct(product);
       } else {
-        onAddProducts(newProduct);
+        onAddProducts(product);
       }
       handleCloseFormModal();
-      setShowConfirmationModal(true);
     } else {
       console.log("Formulaire incomplet"); // Ajout d'une indication si le formulaire est incomplet
     }
   };
-
 
   return (
     <>
@@ -172,21 +167,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
           </Form>
         </Modal.Body>
       </Modal>
-
-      <Modal show={showConfirmationModal} onHide={handleCloseConfirmationModal}>
-        <Modal.Header closeButton closeVariant="white" className='bg-dark'>
-          <Modal.Title>Confirmation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className='bg-dark'>
-          L'article {productName} a été {productsToUpdate ? 'modifiée' : 'ajoutée'} avec succès.
-        </Modal.Body>
-        <Modal.Footer className='bg-dark'>
-          <Button variant="secondary" onClick={handleCloseConfirmationModal}>
-            Fermer
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
     </>
   );
 };

@@ -6,30 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import fr from "date-fns/locale/fr";
 import axios from "axios";
 import InvoiceForm from "./invoiceForm";
-
-export interface Invoice {
-    id: number,
-    date: string,
-    tva: number,
-    total: number,
-    payment: string[];
-    invoiceProducts: InvoiceProducts[];
-    invoiceNumber: string;
-}
-
-export interface InvoiceProducts {
-    "@id": string;
-    id: number;
-    invoice: string;
-    product: {
-        "@id": string;
-        id: number;
-        name: string;
-        price: number;
-        tva: string;
-    };
-    quantity: number;
-}
+import { Invoice } from "components/types";
 
 // @ts-ignore
 registerLocale("fr", fr);
