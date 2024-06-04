@@ -1,17 +1,9 @@
 import axios from 'axios';
 import { ProductsInterface, TvaInterface, CategoryInterface } from './types';
+import { Category } from './settings/categories/category';
 
 const API_URL = 'https://localhost:8000/api';
 
-export const fetchTvas = async (): Promise<TvaInterface[]> => {
-  const response = await axios.get(`${API_URL}/tvas`);
-  return response.data["hydra:member"];
-};
-
-export const fetchCategories = async (): Promise<CategoryInterface[]> => {
-  const response = await axios.get(`${API_URL}/categories`);
-  return response.data["hydra:member"];
-};
 
 export const fetchProducts = async (): Promise<ProductsInterface[]> => {
   const response = await axios.get(`${API_URL}/products`);
@@ -33,5 +25,37 @@ export const updateProduct = async (productId: number, updatedProduct: ProductsI
   const response = await axios.put(`${API_URL}/products/${productId}`, updatedProduct, {
     headers: { 'Content-Type': 'application/ld+json' },
   });
+  return response.data;
+};
+
+export const fetchTvas = async (): Promise<TvaInterface[]> => {
+  const response = await axios.get(`${API_URL}/tvas`);
+  return response.data["hydra:member"];
+};
+
+export const fetchCategories = async (): Promise<CategoryInterface[]> => {
+  const response = await axios.get(`${API_URL}/categories`);
+  return response.data["hydra:member"];
+};
+
+export const deleteCategory = async (categoryId: number): Promise<void> => {
+  await axios.delete(`${API_URL}/categories/${categoryId}`);
+};
+
+export const updateCategory = async (categoryId: number, updatedCategoryName: string): Promise<Category> => {
+  const response = await axios.put(
+    `${API_URL}/categories/${categoryId}`,
+    { name: updatedCategoryName },
+    { headers: { 'Content-Type': 'application/ld+json' } }
+  );
+  return response.data;
+};
+
+export const addCategory = async (newCategoryName: string): Promise<Category> => {
+  const response = await axios.post(
+    `${API_URL}/categories`,
+    { name: newCategoryName },
+    { headers: { 'Content-Type': 'application/ld+json' } }
+  );
   return response.data;
 };
