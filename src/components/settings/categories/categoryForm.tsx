@@ -38,6 +38,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateC
   const handleCloseFormModal = () => {
     setShowFormModal(false);
     resetCategoryToEdit();
+    setCategoryName('');
   };
 
   const handleCloseConfirmationModal = () => {

@@ -2,31 +2,33 @@ import React, { useEffect, useState } from "react";
 import { Form, Button, Modal } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
-import { Invoice, InvoiceProducts } from "./invoice";
-import { Products } from "./products";
+import { Invoice, InvoiceProducts } from "components/types";
+import { ProductsInterface, PaymentsInterface } from "../../types";
+import Modified from "./modals/modified";
+import ConfirmDelete from "./modals/confirmDelete";
+import Deleted from "./modals/deleted";
+import Loader from "../../loader";
+import {formatDate,formatTime} from "../../utils";
 
 interface InvoiceProps {
   editInvoice: Invoice | null;
   resetForm: () => void;
-  refreshInvoices:()=> void;
-}
-
-interface Payments {
-  id?: number;
-  invoice: string;//iri
-  amount: number;
-  paymentMethod: string;
+  refreshInvoices: () => void;
 }
 
 const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshInvoices }) => {
-  const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
-  const [ showConfirmationModal, setShowConfirmationModal ] = useState<boolean>(false);
+  const [ modals, setModals ] = useState({
+    addedOrModified: false,
+    form: false,
+    deleted: false,
+    confirmDelete: false,
+  });
   const [ formErrors, setFormErrors ] = useState<string[]>([]);
-  const [ products, setProducts ] = useState<(Products & { quantity: number })[]>([]);
+  const [ products, setProducts ] = useState<(ProductsInterface & { quantity: number })[]>([]);
   const [ loading, setLoading ] = useState(false);
-  const [ payments, setPayments ] = useState<Payments[]>([]);
+  const [ payments, setPayments ] = useState<PaymentsInterface[]>([]);
   const [ deletedPayments, setDeletedPayments ] = useState<number[]>([]);
-  const [ newPayments, setNewPayments ] = useState<Payments[]>([]);
+  const [ newPayments, setNewPayments ] = useState<PaymentsInterface[]>([]);
   const [ newPaymentMethod, setNewPaymentMethod ] = useState<string>('Espèce');
   const [ newPaymentAmount, setNewPaymentAmount ] = useState<string>('');
   const [ date, setDate ] = useState<string>('');
@@ -36,24 +38,14 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
 
   useEffect(() => {
     if (editInvoice) {
-      console.log(editInvoice)
       const invoiceProducts = editInvoice.invoiceProducts;
-      setShowFormModal(true);
+      setModals({ ...modals, form: true })
       setDirty(false);
       fetchPayments(editInvoice.payment);
       fetchProducts(invoiceProducts);
       const invoiceDate = new Date(editInvoice.date);
-
-      const day = invoiceDate.getUTCDate().toString().padStart(2, '0');
-      const month = (invoiceDate.getUTCMonth() + 1).toString().padStart(2, '0');
-      const year = invoiceDate.getUTCFullYear();
-      const formattedDate = `${day}/${month}/${year}`;
-
-      const hours = invoiceDate.getUTCHours().toString().padStart(2, '0');
-      const minutes = invoiceDate.getUTCMinutes().toString().padStart(2, '0');
-      const formattedTime = `${hours}h${minutes}`;
-      setDate(formattedDate);
-      setTime(formattedTime);
+      setDate( formatDate(invoiceDate));
+      setTime(formatTime(invoiceDate));
     }
   }, [ editInvoice ]);
 
@@ -98,19 +90,25 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
   };
 
   const handleCloseFormModal = () => {
-    setShowFormModal(false);
+    setModals({ ...modals, form: false})
     setRemainder(0);
     setNewPayments([]);
     setFormErrors([]);
     setDeletedPayments([]);
-    resetForm()
+    resetForm();
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const closeConfirmModal = () =>{
+    handleCloseFormModal();
+    setModals({...modals, addedOrModified:false, deleted:false});
+    refreshInvoices();
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     if (dirty === false) {
-      setShowFormModal(false);
+      setModals({ ...modals, form: false })
       return;
     }
     if (remainder === 0) {
@@ -120,11 +118,11 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
           await Promise.all(
             deletedPayments.map(async (id) => {
               await axios.delete(`https://localhost:8000/api/payments/${id}`,
-              {
-                headers: {
-                  'Content-Type': 'application/ld+json'
-                }
-              });
+                {
+                  headers: {
+                    'Content-Type': 'application/ld+json'
+                  }
+                });
             })
           );
         }
@@ -134,24 +132,21 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
           await Promise.all(
             newPayments.map(async (payment) => {
               await axios.post('https://localhost:8000/api/payments',
-              payment,
-              {
-                headers: {
-                  'Content-Type': 'application/ld+json'
-                }
-              });
+                payment,
+                {
+                  headers: {
+                    'Content-Type': 'application/ld+json'
+                  }
+                });
             })
           );
         }
-        handleCloseFormModal();
-        refreshInvoices();
-        setShowConfirmationModal(true);
+        setModals({ ...modals,form: false ,addedOrModified: true })
       } catch (error) {
         console.error('Erreur lors de la mise à jour des paiements', error);
         setFormErrors(prevErrors => [ ...prevErrors, "Une erreur s'est produite lors de la mise à jour des paiements" ]);
       } finally {
         setLoading(false);
-        resetForm();
       }
     } else {
       setFormErrors(prevErrors => [ ...prevErrors, "Le montant restant à payer doit être égal à 0 avant de soumettre." ]);
@@ -160,55 +155,73 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
   };
 
   const deletePaymentMethod = (index: number) => {
-    const paymentToDelete = payments[index];
+    const paymentToDelete = payments[ index ];
     if (paymentToDelete.id) {
-      setDeletedPayments([...deletedPayments, paymentToDelete.id]);
+      setDeletedPayments([ ...deletedPayments, paymentToDelete.id ]);
       setPayments(payments.filter((_, i) => i !== index));
       setRemainder(remainder + paymentToDelete.amount);
       setDirty(true);
     } else {
       // Gérez le cas où paymentToDelete est undefined
-      setFormErrors(previousError=>[...previousError,'Paiement à supprimer non trouvé'])
+      setFormErrors(previousError => [ ...previousError, 'Paiement à supprimer non trouvé' ])
     }
   };
-  
+
   const addPaymentMethod = () => {
     setFormErrors([]);
     if (parseFloat(newPaymentAmount) <= remainder) {
       if (!editInvoice) {
-        setFormErrors(previousError => [...previousError, 'Erreur: aucune facture à éditer']);
+        setFormErrors(previousError => [ ...previousError, 'Erreur: aucune facture à éditer' ]);
         return;
       }
-  
+
       const newPayment = {
         amount: parseFloat(newPaymentAmount),
         paymentMethod: newPaymentMethod,
         invoice: `https://localhost:8000/api/invoices/${editInvoice.id}`
       };
-  
-      setNewPayments([...newPayments, newPayment]);
+
+      setNewPayments([ ...newPayments, newPayment ]);
       setNewPaymentMethod('Espèce');
       setNewPaymentAmount('0');
       setRemainder(remainder - parseFloat(newPaymentAmount));
-      setDirty(true); // Marquer le formulaire comme modifié
+      setDirty(true);
     } else {
-      setFormErrors(previousError => [...previousError, 'Vous ne pouvez pas dépasser le montant total']);
+      setFormErrors(previousError => [ ...previousError, 'Vous ne pouvez pas dépasser le montant total' ]);
     }
   };
-  
 
   const cancelNewPaymentMethod = (index: number) => {
     setRemainder(remainder + newPayments[ index ].amount);
     setNewPayments(newPayments.filter((_, i) => i !== index));
   }
 
+  const handleDeleteInvoice = async (invoiceId: number) => {
+    setLoading(true);
+    try {
+      await axios.delete(`https://localhost:8000/api/invoices/${invoiceId}`);
+      setModals({ ...modals, deleted: true , form:false })
+    } catch {
+      setFormErrors(previousError => [ ...previousError, 'Erreur lors de la suppression de la facture' ])
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <>
-      <Modal show={showFormModal} onHide={handleCloseFormModal}>
+      <ConfirmDelete show={modals.confirmDelete} onHide={() => handleCloseFormModal()} editInvoice={editInvoice!} handleDeleteInvoice={() => handleDeleteInvoice(editInvoice?.id!)} setShowDeleteModal={() => setModals({ ...modals, confirmDelete: false })} />
+      <Modified show={modals.addedOrModified} onHide={() => closeConfirmModal()} invoice={editInvoice?.invoiceNumber!} />
+      <Deleted show={modals.deleted} onHide={() => closeConfirmModal()} invoice={editInvoice?.invoiceNumber}></Deleted>
+      
+      <Modal show={modals.form} onHide={handleCloseFormModal}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>Facture N°{editInvoice?.invoiceNumber}</Modal.Title>
         </Modal.Header>
         <Modal.Body className='bg-dark rounded-bottom'>
+
+          <Loader loading={loading}></Loader>
+
           <Form onSubmit={handleSubmit}>
             <h3 className="text-center">Total: {editInvoice?.total}€</h3>
             <p className="text-center">Le {date} à {time}</p>
@@ -284,27 +297,16 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
               <li className="position-relative fw-bold">Total TTC <span className="position-absolute end-0 me-2">{editInvoice?.total}€</span></li>
             </ul>
 
-            <div className="d-flex justify-content-end">
-              <Button className='mt-3' variant="primary" type="submit" disabled={loading}>
+            <div className="d-flex justify-content-between">
+              <Button className='mt-3' variant="danger" onClick={() => setModals({ ...modals, confirmDelete: true })}>
+                Supprimer
+              </Button>
+              <Button className='mt-3' variant="primary" type="submit">
                 Modifier
               </Button>
             </div>
           </Form>
         </Modal.Body>
-      </Modal>
-
-      <Modal show={showConfirmationModal}>
-        <Modal.Header closeButton closeVariant="white" className='bg-dark'>
-          <Modal.Title>Confirmation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className='bg-dark'>
-          La facture modifiée avec succès.
-        </Modal.Body>
-        <Modal.Footer className='bg-dark'>
-          <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>
-            Fermer
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );

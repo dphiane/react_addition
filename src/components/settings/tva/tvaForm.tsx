@@ -6,18 +6,18 @@ interface Tva {
     tva: number;
   }
 
-interface TvaFormProps { // Correction de la casse du nom de l'interface
+interface TvaFormProps {
   tvaToUpdate: Tva | null;
   onSubmit: (updatedTva: number) => void;
   onAddTva: (newTva: number) => void;
-  existingTva: number | null;
   showFormModal: boolean;
   setShowFormModal:(value:boolean)=>void;
+  reset: ()=>void;
+  error: string;
 }
 
-const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, existingTva,setShowFormModal,showFormModal }) => {
+const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva,setShowFormModal,showFormModal,reset,error }) => {
   const [tva, setTva] = useState<number>();
-  const [showConfirmationModal, setShowConfirmationModal] = useState<boolean>(false);
 
   useEffect(() => {
     if (tvaToUpdate) {
@@ -26,41 +26,26 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
     }
   }, [tvaToUpdate]);
 
-  const handleCloseFormModal = () => {
-    setShowFormModal(false);
-  };
-
-  const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-    setTva(0);
-  }
-
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
       if (tvaToUpdate) {
         onSubmit(tva!);
-        handleCloseFormModal();
-        if (existingTva !== null) {
-          setShowConfirmationModal(true);
-        }
-        setShowConfirmationModal(true);
       } else {
         onAddTva(tva!);
-        handleCloseFormModal();
-        if (existingTva !== null) {
-          setShowConfirmationModal(true);
-        }
     }
   };
 
+  const handleCloseModal=()=>{
+    setTva(0);
+    reset();
+  }
   return (
     <>
-      <Modal show={showFormModal} onHide={handleCloseFormModal}>
+      <Modal show={showFormModal} onHide={()=>handleCloseModal()}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>{tvaToUpdate ? 'Modifier une taxe' : 'Ajouter une taxe'}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className='bg-dark'>
+        <Modal.Body className='bg-dark rounded-bottom'>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="tva">
               <Form.Control
@@ -72,8 +57,11 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
                 autoFocus
               />
             </Form.Group>
+            {error.length > 0 && (
+              <p className='text-danger m-1'>{error}</p>
+            )}
             <div className="d-flex justify-content-end">
-              <Button className='m-2' variant="primary" type="submit">
+              <Button className='mt-2' variant="primary" type="submit">
                 {tvaToUpdate ? 'Modifier' : 'Ajouter'}
               </Button>
             </div>
@@ -81,19 +69,6 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva, exis
         </Modal.Body>
       </Modal>
 
-      <Modal show={showConfirmationModal} onHide={handleCloseConfirmationModal}>
-        <Modal.Header closeButton  closeVariant="white" className='bg-dark'>
-          <Modal.Title>Confirmation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className='bg-dark'>
-          La tva de {tva} a été {tvaToUpdate ? 'modifiée' : 'ajoutée'} avec succès.
-        </Modal.Body>
-        <Modal.Footer className='bg-dark'>
-          <Button variant="secondary" onClick={handleCloseConfirmationModal}>
-            Fermer
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </>
   );
 };

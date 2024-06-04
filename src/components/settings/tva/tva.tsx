@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import TvaForm from "./tvaForm";
+import ConfirmDelete from "./modals/confirmDelete";
+import Deleted from "./modals/deleted";
+import AddedOrModified from "./modals/addedOrModified";
 
-interface Tva {
+export interface Tva {
   id: number;
   tva: number;
 }
@@ -15,10 +17,14 @@ function Tva() {
   const [ tvas, setTvas ] = useState<Tva[]>([]);
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ showDeleteConfirmation, setShowDeleteConfirmation ] = useState(false);
-  const [showFormModal,setShowFormModal]=useState(false);
+  const [ showDeletedModal, setShowDeletedModal ] = useState<boolean>(false);
+  const [showModalAddedOrModified, setShowModalAddedOrModified] = useState<boolean>(false);
+
+  const [ showFormModal, setShowFormModal ] = useState(false);
   const [ tvaToDelete, setTvaToDelete ] = useState<Tva | null>(null);
   const [ tvaToEdit, setTvaToEdit ] = useState<Tva | null>(null);
-  const [ existingTva, setExistingTva ] = useState<number | null>(null); // Nouvel état pour stocker le montant de TVA existant
+  const [updated, setUpdated]= useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -43,6 +49,7 @@ function Tva() {
       await axios.delete(`https://localhost:8000/api/tvas/${tvaId}`);
       setTvas(tvas.filter(tva => tva.id !== tvaId));
       setShowDeleteConfirmation(false);
+      setShowDeletedModal(true);
     } catch (error) {
       console.error('Erreur lors de la suppression de la taxe:', error);
     }
@@ -55,11 +62,13 @@ function Tva() {
     }
   };
 
-  const handleCloseModal = () => {
-    setShowDeleteConfirmation(false);
+  const reset = () => {
+    setError('')
+    setShowFormModal(false)
     setTvaToDelete(null);
-    setExistingTva(null);
-  };
+    setTvaToEdit(null);
+    setUpdated(false);
+  }
 
   const handleUpdateTva = async (updatedTva: number) => {
     if (tvaToEdit) {
@@ -74,7 +83,9 @@ function Tva() {
           tva.id === updatedTvaData.id ? updatedTvaData : tva
         ));
         console.log(`TVA mise à jour avec succès:`, updatedTvaData);
-        handleCloseModal();
+        setUpdated(true);
+        setShowModalAddedOrModified(true)
+        reset()
       } catch (error) {
         console.error('Erreur lors de la mise à jour de la taxe:', error);
       }
@@ -82,12 +93,13 @@ function Tva() {
   };
 
   const handleAddTva = async (newTva: number) => {
+    setError('');
+
     if (newTva === undefined) {
       return;
     }
     if (tvas.some(tva => tva.tva === newTva)) {
-      setExistingTva(newTva);
-      setShowDeleteConfirmation(true);
+      setError("Votre Tva existe déja !");
       return;
     }
 
@@ -98,6 +110,8 @@ function Tva() {
         { headers: { 'Content-Type': 'application/ld+json' } }
       );
       setTvas([ ...tvas, response.data ]);
+      reset();
+      setShowModalAddedOrModified(true);
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la taxe:', error);
     }
@@ -119,20 +133,30 @@ function Tva() {
                   <i className="fa-solid fa-pen-to-square m-2 text-warning"
                     onClick={() => handleEditTva(tva.id)}></i>
                   <i className="fa-solid fa-trash m-2 text-danger"
-                    onClick={() => { setTvaToDelete(tva); setShowDeleteConfirmation(true); }}></i>
+                    onClick={() => { setTvaToDelete(tva); setShowDeleteConfirmation(true) }}></i>
                 </span>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      <TvaForm onAddTva={handleAddTva} tvaToUpdate={tvaToEdit} onSubmit={handleUpdateTva} existingTva={existingTva} showFormModal={showFormModal} setShowFormModal={setShowFormModal} />
+      <TvaForm
+        onAddTva={handleAddTva}
+        tvaToUpdate={tvaToEdit}
+        onSubmit={handleUpdateTva}
+        showFormModal={showFormModal}
+        setShowFormModal={setShowFormModal}
+        reset={reset}
+        error={error}
+      />
 
+      <ConfirmDelete show={showDeleteConfirmation} onHide={() => setShowDeleteConfirmation(false)} tvaToDelete={tvaToDelete} handleDeleteTva={() => handleDeleteTva(tvaToDelete?.id!)}></ConfirmDelete>
+      <Deleted show={showDeletedModal} onHide={() => setShowDeletedModal(false)} tva={tvaToDelete?.tva!} />
+      <AddedOrModified show={showModalAddedOrModified} onHide={()=>setShowModalAddedOrModified(false)} tva={tvaToEdit} updated={false} />
       <nav>
         <div className="d-flex justify-content-between ms-2 me-2">
           <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
-
-          {tvas.length > 10 && (
+          {tvas.length > itemsPerPage && (
             <ul className="pagination">
               {Array.from({ length: Math.ceil(tvas.length / itemsPerPage) }, (_, index) => (
                 <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
@@ -143,28 +167,9 @@ function Tva() {
               ))}
             </ul>
           )}
-          <Button onClick={()=>setShowFormModal(true)}>Ajouter une TVA</Button>
+          <Button onClick={() => setShowFormModal(true)}>Ajouter une TVA</Button>
         </div>
       </nav>
-
-      <Modal show={showDeleteConfirmation} onHide={handleCloseModal}>
-        <Modal.Header closeButton closeVariant="white" className='bg-dark'>
-          <Modal.Title>{existingTva ? 'TVA déjà existante' : 'Confirmer la suppression'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className='bg-dark'>
-          {existingTva ? `Le montant de TVA ${existingTva} existe déjà.` : `Êtes-vous sûr de vouloir supprimer la taxe ${tvaToDelete?.tva}% ?`}
-        </Modal.Body>
-        <Modal.Footer className='bg-dark'>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            {existingTva ? 'Fermer' : 'Annuler'}
-          </Button>
-          {!existingTva && (
-            <Button variant="danger" onClick={() => handleDeleteTva(tvaToDelete?.id!)}>
-              Supprimer
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
