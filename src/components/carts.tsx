@@ -103,7 +103,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
           <span className='position-absolute end-0 me-2'>{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span></p>
         <p className='fw-bold position-relative m-1'>Total 
           <span className='position-absolute end-0 me-2'>{calculateTotalPrice(cart)} €</span></p>
-        <button className="bg-primary text-light text-center fw-bold p-2 w-100 border-0" onClick={handleSaveCart}>
+        <button className="bg-primary text-light text-center fw-bold p-2 w-100 border-0" onClick={()=>handleSaveCart()}>
           <Link to="/payment">Payer</Link>
         </button>
       </div>

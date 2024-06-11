@@ -6,7 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import fr from "date-fns/locale/fr";
 import axios from "axios";
 import InvoiceForm from "./invoiceForm";
-import { Invoice } from "components/types";
+import { InvoiceInterface } from "components/types";
 import Loader from "../../loader";
 import {formatDate,formatTime} from "../../utils";
 
@@ -14,8 +14,8 @@ import {formatDate,formatTime} from "../../utils";
 registerLocale("fr", fr);
 
 const Invoices = () => {
-    const [ invoices, setInvoices ] = useState<Invoice[]>([]);
-    const [ invoiceToEdit, setInvoiceToEdit ] = useState<Invoice | null>(null);
+    const [ invoices, setInvoices ] = useState<InvoiceInterface[]>([]);
+    const [ invoiceToEdit, setInvoiceToEdit ] = useState<InvoiceInterface | null>(null);
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ errors, setErrors ] = useState<string | null>(null);
     const [ searchTerm, setSearchTerm ] = useState<Date | null>(null);

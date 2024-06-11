@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ProductsInterface, TvaInterface, CategoryInterface } from './types';
+import { ProductsInterface, TvaInterface, CategoryInterface , InvoiceInterface, PaymentsInterface} from './types';
 import { Category } from './settings/categories/category';
 
 const API_URL = 'https://localhost:8000/api';
@@ -59,3 +59,37 @@ export const addCategory = async (newCategoryName: string): Promise<Category> =>
   );
   return response.data;
 };
+
+export const fetchInvoicesByDate = async (startDate?: string, endDate?: string): Promise<InvoiceInterface[]> => {
+  try {
+    const params: Record<string, string> = {};
+    if (startDate) params['date[after]'] = startDate;
+    if (endDate) params['date[before]'] = endDate;
+    
+    const response = await axios.get(`${API_URL}/invoices`, { params });
+    return response.data['hydra:member'] ?? [];
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error message: ', error.message);
+    } else {
+      console.error('Unexpected error: ', error);
+    }
+    throw error;
+  }
+};
+
+export const fetchPaymentsByIri = async (paymentsIRI: string[]): Promise<PaymentsInterface[]> => {
+  try {
+    const paymentsData = await Promise.all(
+      paymentsIRI.map(async (iri) => {
+        const response = await axios.get(`https://localhost:8000${iri}`);
+        console.log(response.data)
+        return response.data;
+      })
+    );
+    return paymentsData;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des paiements', error);
+    return [];
+  }
+}

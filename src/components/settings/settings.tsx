@@ -6,10 +6,11 @@ import Products from './products/products';
 import SettingsCategory from './categories/category';
 import Tva from './tva/tva';
 import Invoices from './invoice/invoice';
+import Activity from './activity/activity';
 
 function Settings() {
   return (
-    <div className=' min-vh-100 '>
+    <div className='min-vh-100'>
       <Tabs
         defaultActiveKey="products"
         id="settings-tabs"
@@ -27,8 +28,8 @@ function Settings() {
         <Tab eventKey="tickets" title="Tickets">
           <Invoices></Invoices>
         </Tab>
-        <Tab eventKey="cashRegister" title="Journal de caisse">
-
+        <Tab eventKey="activity" title="Activité">
+          <Activity></Activity>
         </Tab>
       </Tabs>
     </div>

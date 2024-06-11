@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Button, Modal } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
-import { Invoice, InvoiceProducts } from "components/types";
+import { InvoiceInterface, InvoiceProducts } from "components/types";
 import { ProductsInterface, PaymentsInterface } from "../../types";
 import Modified from "./modals/modified";
 import ConfirmDelete from "./modals/confirmDelete";
@@ -11,7 +11,7 @@ import Loader from "../../loader";
 import {formatDate,formatTime} from "../../utils";
 
 interface InvoiceProps {
-  editInvoice: Invoice | null;
+  editInvoice: InvoiceInterface | null;
   resetForm: () => void;
   refreshInvoices: () => void;
 }

@@ -4,14 +4,14 @@ import Calculator from './calculator';
 import ClosePayment from "./modal/closePayment";
 import { calculateTotalPrice, calculateTotalTVA } from "../functions/cart";
 import axios from 'axios';
-import { Products } from "./settings/products/products";
+import { ProductsInterface } from "./types";
 
 const Payment = () => {
     const [payments, setPayments] = useState<{ amount: number, paymentMethod: string }[]>([]);
     const [remainder, setRemainder] = useState(0);
     const [totalCart, setTotalCart] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    const [products, setProducts] = useState<(Products & { quantity: number; tva: number })[]>([]);
+    const [products, setProducts] = useState<(ProductsInterface & { quantity: number; tva: number })[]>([]);
 
     useEffect(() => {
         const totalPaid = payments.reduce((acc, payment) => acc + payment.amount, 0);
@@ -36,7 +36,7 @@ const Payment = () => {
         setTotalCart(totalFromCart);
     };
 
-    const handleProductsFetched = (fetchedProducts: (Products & { quantity: number; tva: number })[]) => {
+    const handleProductsFetched = (fetchedProducts: (ProductsInterface & { quantity: number; tva: number })[]) => {
         setProducts(fetchedProducts);
     };
 

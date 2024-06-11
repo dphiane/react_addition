@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "./styles/index.css";
+import './styles/media-queries.css'
 import 'react-datepicker/dist/react-datepicker.css';
 
 import Command from "./components/command";

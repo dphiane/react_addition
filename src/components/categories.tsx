@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Products, Tva } from './settings/products/products';
+import { ProductsInterface, TvaInterface } from './types';
 
 interface CartItemType {
   quantity: number;
@@ -16,15 +16,15 @@ interface CategoryProps {
 interface CategoryInterface {
   id: number;
   name: string;
-  products: Products[];
+  products: ProductsInterface[];
 }
 
 const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   const [ categories, setCategories ] = useState<CategoryInterface[]>([]);
   const [ selectedCategory, setSelectedCategory ] = useState<string>('Apéritifs');
-  const [ categoryProducts, setCategoryProducts ] = useState<Products[]>([]);
-  const [ products, setProducts ] = useState<Products[]>([]);
-  const [ tvas, setTvas ] = useState<Tva[]>([]);
+  const [ categoryProducts, setCategoryProducts ] = useState<ProductsInterface[]>([]);
+  const [ products, setProducts ] = useState<ProductsInterface[]>([]);
+  const [ tvas, setTvas ] = useState<TvaInterface[]>([]);
   const [ loading, setLoading ] = useState<boolean>(false);
 
   const [ currentPage, setCurrentPage ] = useState(1);
@@ -105,7 +105,7 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
     setSelectedCategory(category);
   };
 
-  const handleProductSelection = (product: Products) => {
+  const handleProductSelection = (product: ProductsInterface) => {
     addToCart(product.name, 1, product.price, getTvaFromIri(product.tva), product.id!);
   };
 
@@ -131,7 +131,7 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
           </div>
           {
             loading && (
-              <div className="d-flex justify-content-center my-4">
+              <div className="d-flex justify-content-center align-items-center my-4">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Chargement</span>
                 </div>

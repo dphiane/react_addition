@@ -203,8 +203,8 @@ function Products() {
         updated={update}
       />
 
-      <div className="d-flex justify-content-between ms-2 me-2">
-        <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
+      <div className="container-pagination">
+        <Link to={"/"}><button className="btn btn-secondary ms-2">Retour</button></Link>
         {filteredProducts.length > itemsPerPage && (
           <ul className="pagination">
             {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (product, index) => (
@@ -216,7 +216,7 @@ function Products() {
             ))}
           </ul>
         )}
-        <Button onClick={() => setModals({ ...modals, form: true })}>Ajouter un article</Button>
+        <Button className="me-2" onClick={() => setModals({ ...modals, form: true })}>Ajouter un article</Button>
       </div>
     </div>
   );

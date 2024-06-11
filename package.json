@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.19",
+    "@mui/x-charts": "^7.6.1",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "date-fns": "^3.6.0",
@@ -19,6 +23,7 @@
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
+    "react-charts": "^3.0.0-beta.57",
     "react-datepicker": "^6.9.0",
     "react-dom": "^18.2.0",
     "react-konva": "^18.2.10",
