@@ -39,3 +39,8 @@ export const formatDateForResearch = (date: Date) => {
   const year = date.getUTCFullYear();
   return `${year}-${month}-${day}`;
 }
+
+export const toUTC = (date: Date) => {
+  const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  return utcDate;
+};

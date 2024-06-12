@@ -64,8 +64,11 @@ export const fetchInvoicesByDate = async (startDate?: string, endDate?: string):
   try {
     const params: Record<string, string> = {};
     if (startDate) params['date[after]'] = startDate;
-    if (endDate) params['date[before]'] = endDate;
-    
+    if (endDate) {
+      // Append time to endDate to ensure the end of the day is included
+      const endDateWithTime = `${endDate}T23:59:59`;
+      params['date[before]'] = endDateWithTime;
+    }
     const response = await axios.get(`${API_URL}/invoices`, { params });
     return response.data['hydra:member'] ?? [];
   } catch (error) {
