@@ -144,7 +144,6 @@ const Activity = () => {
       }));
 
       setPaymentsMethodTotal(paymentTotalsArray);
-      console.log("Payment Totals:", paymentTotalsArray);
     }
   };
 

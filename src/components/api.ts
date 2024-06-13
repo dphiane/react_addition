@@ -1,13 +1,44 @@
 import axios from 'axios';
-import { ProductsInterface, TvaInterface, CategoryInterface , InvoiceInterface, PaymentsInterface} from './types';
+import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface } from './types';
 import { Category } from './settings/categories/category';
 
 const API_URL = 'https://localhost:8000/api';
 
+export const register = async (email: string, password: string) => {
+  const response = await axios.post(`${API_URL}/register`, { email, password });
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
+  return response.data;
+}
+
+export const login = async (email: string, password: string) => {
+  try {
+    const response = await axios.post(`${API_URL}/login_check`, {
+      email: email,
+      password: password
+    });
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Login failed', error);
+  }
+};
+
+export const logout = () => {
+  localStorage.removeItem('token');
+};
+
+export const getCurrentUser = () => {
+  return localStorage.getItem('token');
+};
 
 export const fetchProducts = async (): Promise<ProductsInterface[]> => {
   const response = await axios.get(`${API_URL}/products`);
-  return response.data["hydra:member"];
+  return response.data[ "hydra:member" ];
 };
 
 export const deleteProduct = async (productId: number): Promise<void> => {
@@ -30,12 +61,12 @@ export const updateProduct = async (productId: number, updatedProduct: ProductsI
 
 export const fetchTvas = async (): Promise<TvaInterface[]> => {
   const response = await axios.get(`${API_URL}/tvas`);
-  return response.data["hydra:member"];
+  return response.data[ "hydra:member" ];
 };
 
 export const fetchCategories = async (): Promise<CategoryInterface[]> => {
   const response = await axios.get(`${API_URL}/categories`);
-  return response.data["hydra:member"];
+  return response.data[ "hydra:member" ];
 };
 
 export const deleteCategory = async (categoryId: number): Promise<void> => {
@@ -63,14 +94,14 @@ export const addCategory = async (newCategoryName: string): Promise<Category> =>
 export const fetchInvoicesByDate = async (startDate?: string, endDate?: string): Promise<InvoiceInterface[]> => {
   try {
     const params: Record<string, string> = {};
-    if (startDate) params['date[after]'] = startDate;
+    if (startDate) params[ 'date[after]' ] = startDate;
     if (endDate) {
       // Append time to endDate to ensure the end of the day is included
       const endDateWithTime = `${endDate}T23:59:59`;
-      params['date[before]'] = endDateWithTime;
+      params[ 'date[before]' ] = endDateWithTime;
     }
     const response = await axios.get(`${API_URL}/invoices`, { params });
-    return response.data['hydra:member'] ?? [];
+    return response.data[ 'hydra:member' ] ?? [];
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error('Error message: ', error.message);

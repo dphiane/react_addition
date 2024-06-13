@@ -1,31 +1,24 @@
-import React, { useState, FormEvent } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import React, { useState} from "react";
+
+import { Link , useNavigate } from "react-router-dom";
+import { login } from './api';
 // @ts-ignore
 import Image from "../assets/caisse-restaurant.png";
 
-function LoginForm() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+const Login: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate()
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setError('');
     try {
-      // Appel à l'API pour authentifier l'utilisateur et obtenir le token JWT
-      const response = await axios.post<{ token: string }>("http://example.com/api/login", {
-        email: email,
-        password: password,
-      });
-
-      // Stockage du token JWT dans le localStorage
-      localStorage.setItem("token", response.data.token);
-
-      // Redirection vers la page d'accueil
-      window.location.href = "/";
-    } catch (error) {
-      // Affichage d'un message d'erreur si les informations de connexion sont incorrectes
-      alert("Identifiant ou mot de passe incorrect");
+      await login(email, password);
+      navigate("/");
+    } catch (err) {
+      setError('Vos identifiants sont incorrects.');
     }
   };
 
@@ -38,16 +31,16 @@ function LoginForm() {
           alt="illustration d'une caisse enregistreuse"
         />
       </div>
-      <div className="container col-lg-4 d-flex flex-column justify-content-center">
-        <h2 className="text-center">Connexion</h2>
-        <form onSubmit={handleLogin}>
+      <div className="container col-lg-4 col-md-6 col-10 d-flex flex-column justify-content-center">
+        <h2 className="text-center text-light">Connexion</h2>
+        <form onSubmit={handleSubmit} >
           <div className="mb-3">
-            <label htmlFor="email" className="form-label">
+            <label htmlFor="email" className="form-label text-light">
               Email
             </label>
             <input
               type="email"
-              className="form-control"
+              className="form-control "
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -55,7 +48,7 @@ function LoginForm() {
             />
           </div>
           <div className="mb-3">
-            <label htmlFor="password" className="form-label">
+            <label htmlFor="password" className="form-label text-light">
               Mot de passe
             </label>
             <input
@@ -67,10 +60,11 @@ function LoginForm() {
               required
             />
           </div>
+          {error && <p className="text-danger">{error}</p>}
           <button type="submit" className="btn btn-primary">
             Se connecter
           </button>
-          <small className="ms-2">
+          <small className="ms-2 text-light">
             <Link to={'/forgot-password'}>Mot de passe oublié ?</Link>
           </small>
         </form>
@@ -79,4 +73,4 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;
+export default Login;
