@@ -15,6 +15,7 @@ import Settings from "./components/settings/settings";
 import ProtectedRoute from "./protectedRoute";
 import RegisterForm from "./components/registerForm";
 import NotFound from "./components/NotFound";
+import ResetPasswordPage from "./components/resetPasswordPage";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/reset_password" element={<ResetPasswordPage></ResetPasswordPage>}/>
         <Route
           path="/plan"
           element={<ProtectedRoute element={SeatingPlan} />}

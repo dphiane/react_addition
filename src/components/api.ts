@@ -3,6 +3,7 @@ import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, P
 import { Category } from './settings/categories/category';
 
 const API_URL = 'https://localhost:8000/api';
+const API_URL_FORGOT_PASSWORD= 'https://localhost:8000/forgot_password/';
 
 export const register = async (email: string, password: string) => {
   const response = await axios.post(`${API_URL}/register`, { email, password });
@@ -10,6 +11,36 @@ export const register = async (email: string, password: string) => {
     localStorage.setItem('token', response.data.token);
   }
   return response.data;
+}
+export const forgotPassword = async (token: string , password:string)=>{
+  const response = await axios.post(`${API_URL_FORGOT_PASSWORD}${token}`, {
+    password:password,
+});
+return response;
+}
+
+export const resetPasswordRequest = async (email: string) => {
+    const response = await axios.post(`${API_URL_FORGOT_PASSWORD}`, { email },{
+      headers: {
+        'Content-Type': 'application/json',
+      }})
+
+    return response.data;
+}
+
+export const changePassword = async (email: string, currentPassword: string, newPassword: string, token: string) => {
+    const response = await axios.post(`${API_URL}/change_password`, {
+      email: email,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    return response.data; 
 }
 
 export const login = async (email: string, password: string) => {
@@ -20,15 +51,15 @@ export const login = async (email: string, password: string) => {
     });
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
-
     }
     return response.data;
   } catch (error) {
     console.error('Login failed', error);
+    throw error;
   }
 };
 
-export const logout = () => {
+export const removeToken = () => {
   localStorage.removeItem('token');
 };
 
@@ -117,7 +148,6 @@ export const fetchPaymentsByIri = async (paymentsIRI: string[]): Promise<Payment
     const paymentsData = await Promise.all(
       paymentsIRI.map(async (iri) => {
         const response = await axios.get(`https://localhost:8000${iri}`);
-        console.log(response.data)
         return response.data;
       })
     );

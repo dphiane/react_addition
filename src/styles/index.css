@@ -12145,4 +12145,13 @@ li {
 
 .activity-icon-arrow-down {
   display: none;
+}
+
+.card-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 15px;
 }/*# sourceMappingURL=index.css.map */
