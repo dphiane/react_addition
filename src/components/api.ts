@@ -5,6 +5,14 @@ import { Category } from './settings/categories/category';
 const API_URL = 'https://localhost:8000/api';
 const API_URL_FORGOT_PASSWORD= 'https://localhost:8000/forgot_password/';
 
+export const fetchInvoices = async () => {
+      const response = await axios.get(`${API_URL}/invoices`);
+      return response.data;
+};
+export const fetchInvoiceByID = async (id:number) => {
+  const response = await axios.get(`${API_URL}/invoices/${id}`);
+  return response.data;
+};
 export const register = async (email: string, password: string) => {
   const response = await axios.post(`${API_URL}/register`, { email, password });
   if (response.data.token) {

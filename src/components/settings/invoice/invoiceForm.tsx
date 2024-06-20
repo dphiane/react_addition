@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Form, Button, Modal } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import axios from "axios";
@@ -8,7 +8,9 @@ import Modified from "./modals/modified";
 import ConfirmDelete from "./modals/confirmDelete";
 import Deleted from "./modals/deleted";
 import Loader from "../../loader";
-import {formatDate,formatTime} from "../../utils";
+import { formatDate, formatTime } from "../../utils";
+import ReactToPrint from 'react-to-print';
+import PrintInvoice from "./printInvoice";
 
 interface InvoiceProps {
   editInvoice: InvoiceInterface | null;
@@ -35,6 +37,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
   const [ time, setTime ] = useState<string>('');
   const [ remainder, setRemainder ] = useState<number>(0);
   const [ dirty, setDirty ] = useState<boolean>(false);
+  const componentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (editInvoice) {
@@ -44,7 +47,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
       fetchPayments(editInvoice.payment);
       fetchProducts(invoiceProducts);
       const invoiceDate = new Date(editInvoice.date);
-      setDate( formatDate(invoiceDate));
+      setDate(formatDate(invoiceDate));
       setTime(formatTime(invoiceDate));
     }
   }, [ editInvoice ]);
@@ -90,7 +93,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
   };
 
   const handleCloseFormModal = () => {
-    setModals({ ...modals, form: false})
+    setModals({ ...modals, form: false })
     setRemainder(0);
     setNewPayments([]);
     setFormErrors([]);
@@ -98,9 +101,9 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
     resetForm();
   };
 
-  const closeConfirmModal = () =>{
+  const closeConfirmModal = () => {
     handleCloseFormModal();
-    setModals({...modals, addedOrModified:false, deleted:false});
+    setModals({ ...modals, addedOrModified: false, deleted: false });
     refreshInvoices();
   }
 
@@ -141,7 +144,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
             })
           );
         }
-        setModals({ ...modals,form: false ,addedOrModified: true })
+        setModals({ ...modals, form: false, addedOrModified: true })
       } catch (error) {
         console.error('Erreur lors de la mise à jour des paiements', error);
         setFormErrors(prevErrors => [ ...prevErrors, "Une erreur s'est produite lors de la mise à jour des paiements" ]);
@@ -200,7 +203,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
     setLoading(true);
     try {
       await axios.delete(`https://localhost:8000/api/invoices/${invoiceId}`);
-      setModals({ ...modals, deleted: true , form:false })
+      setModals({ ...modals, deleted: true, form: false })
     } catch {
       setFormErrors(previousError => [ ...previousError, 'Erreur lors de la suppression de la facture' ])
     } finally {
@@ -213,7 +216,8 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
       <ConfirmDelete show={modals.confirmDelete} onHide={() => handleCloseFormModal()} editInvoice={editInvoice!} handleDeleteInvoice={() => handleDeleteInvoice(editInvoice?.id!)} setShowDeleteModal={() => setModals({ ...modals, confirmDelete: false })} />
       <Modified show={modals.addedOrModified} onHide={() => closeConfirmModal()} invoice={editInvoice?.invoiceNumber!} />
       <Deleted show={modals.deleted} onHide={() => closeConfirmModal()} invoice={editInvoice?.invoiceNumber}></Deleted>
-      
+
+
       <Modal show={modals.form} onHide={handleCloseFormModal}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>Facture N°{editInvoice?.invoiceNumber}</Modal.Title>
@@ -221,10 +225,26 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
         <Modal.Body className='bg-dark rounded-bottom'>
 
           <Loader loading={loading}></Loader>
+          <div style={{ display: 'none' }}>
+            <PrintInvoice
+              ref={componentRef}
+              invoice={editInvoice}
+              products={products}
+              payments={payments}
+              date={date}
+              time={time}
+            />
+          </div>
 
           <Form onSubmit={handleSubmit}>
             <h3 className="text-center">Total: {editInvoice?.total}€</h3>
             <p className="text-center">Le {date} à {time}</p>
+            <p className="text-center">
+              <ReactToPrint
+                trigger={() => <Button variant="secondary"><i className="fa-solid fa-print"></i> Imprimer</Button>}
+                content={() => componentRef.current}
+              />
+            </p>
 
             {formErrors.length > 0 && (
               <div className="alert alert-danger">
