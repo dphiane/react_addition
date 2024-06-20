@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { calculateTotalPrice, calculateTotalTVA } from "../functions/cart";
-import { Products } from './settings/products/products';
+import { ProductsInterface } from './types';
 import axios from "axios";
 
 interface CartItem {
@@ -19,12 +19,12 @@ interface paymentProps {
   totalCart: (totalCart: number) => void;
   payments: Payment[];
   onDeletePayment: (index: number) => void;
-  onProductsFetched: (products: (Products & { quantity: number; tva: number })[]) => void; // Add this line
+  onProductsFetched: (products: (ProductsInterface & { quantity: number; tva: number })[]) => void; // Add this line
 }
 
 const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onProductsFetched }: paymentProps) => {
   const selectTable = localStorage.getItem("selectTable");
-  const [products, setProducts] = useState<(Products & { quantity: number; tva: number })[]>([]);
+  const [products, setProducts] = useState<(ProductsInterface & { quantity: number; tva: number })[]>([]);
   let cart: { [key: string]: CartItem } = {};
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onPr
           ids: productIds.join(',')
         }
       });
-      const productsWithQuantityAndTVA = response.data.map((product: Products) => {
+      const productsWithQuantityAndTVA = response.data.map((product: ProductsInterface) => {
         const cartItem = Object.entries(cart).find(([key, item]) => item.id === product.id);
         return {
           ...product,

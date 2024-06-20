@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import { Link } from "react-router-dom";
 import CategoryForm from "./categoryForm";
 import Deleted from "./modals/deleted";
-
-import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 import ConfirmDelete from "./modals/confirmDelete";
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+import { fetchCategories, deleteCategory, updateCategory, addCategory } from "../../api";
+import AddedOrModified from "./modals/addedOrModified";
 
 export interface Category {
   id: number;
@@ -15,14 +14,18 @@ export interface Category {
 }
 
 const categorySettings = () => {
-  const [ categories, setCategories ] = useState<Category[]>([]);
-  const [ currentPage, setCurrentPage ] = useState(1);
-  const [ showConfirmDeleteModal, setShowConfirmDeleteModal ] = useState(false);
-  const [ showFormModal, setShowFormModal ] = useState<boolean>(false);
-  const [ showDeletedModal, setShowDeletedModal] = useState<boolean>(false);
-  const [ formErrors, setFormErrors ] = useState<string>('');
-  const [ categoryToDelete, setCategoryToDelete ] = useState<Category | null>(null);
-  const [ categoryToEdit, setCategoryToEdit ] = useState<Category | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modals, setModals] = useState({
+    addedOrModified: false,
+    form: false,
+    deleted: false,
+    confirmDelete: false,
+  });
+  const [formErrors, setFormErrors] = useState<string>('');
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
+  const [categoryName, setCategoryName]= useState<string>('');
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -30,13 +33,13 @@ const categorySettings = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   useEffect(() => {
-    fetchCategories();
+    fetchData();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchData = async () => {
     try {
-      const response = await axios.get('https://localhost:8000/api/categories');
-      const sortedCategories = response.data[ "hydra:member" ].sort((a: Category, b: Category) => a.name.localeCompare(b.name));
+      const response = await fetchCategories();
+      const sortedCategories = response.sort((a: Category, b: Category) => a.name.localeCompare(b.name));
       setCategories(sortedCategories);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
@@ -45,10 +48,9 @@ const categorySettings = () => {
 
   const handleDeleteCategory = async (categoryId: number) => {
     try {
-      await axios.delete(`https://localhost:8000/api/categories/${categoryId}`);
+      await deleteCategory(categoryId);
       setCategories(categories.filter(category => category.id !== categoryId));
-      setShowConfirmDeleteModal(false);
-      setShowDeletedModal(true);
+      setModals({ ...modals, confirmDelete: false, deleted: true });
     } catch (error) {
       console.error('Erreur lors de la suppression de la catégorie:', error);
     }
@@ -58,30 +60,20 @@ const categorySettings = () => {
     const categoryToEdit = categories.find(category => category.id === categoryId);
     if (categoryToEdit) {
       setCategoryToEdit(categoryToEdit);
-    }else{
-      setFormErrors('Catégorie non trouvée.')
+    } else {
+      setFormErrors('Catégorie non trouvée.');
     }
-  };
-
-  const handleCloseModal = () => {
-    setShowConfirmDeleteModal(false);
-    setCategoryToDelete(null);
   };
 
   const handleUpdateCategory = async (updatedCategoryName: string) => {
     if (categoryToEdit) {
       try {
-        const response = await axios.put(
-          `https://localhost:8000/api/categories/${categoryToEdit.id}`,
-          { name: updatedCategoryName },
-          { headers: { 'Content-Type': 'application/ld+json' } }
-        );
-        const updatedCategory = response.data;
+        const updatedCategory = await updateCategory(categoryToEdit.id, updatedCategoryName);
         setCategories(categories.map(category =>
           category.id === updatedCategory.id ? updatedCategory : category
         ));
-        console.log(`Catégorie mise à jour avec succès:`, updatedCategory);
-        handleCloseModal(); // Ferme la modal après la modification réussie
+        console.log('Catégorie mise à jour avec succès:', updatedCategory);
+        setModals({...modals,addedOrModified:true, form:false})
         setFormErrors('');
       } catch (error) {
         console.error('Erreur lors de la mise à jour de la catégorie:', error);
@@ -92,32 +84,40 @@ const categorySettings = () => {
   const handleAddCategory = async (newCategoryName: string) => {
     if (checkCategoryExist(newCategoryName, categories)) {
       try {
-        const response = await axios.post(
-          'https://localhost:8000/api/categories',
-          { name: newCategoryName },
-          { headers: { 'Content-Type': 'application/ld+json' } }
-        );
-        setCategories([ ...categories, response.data ]); // Ajoute la nouvelle catégorie à la liste actuelle
-        handleCloseModal(); // Ferme la modal après l'ajout réussi
+        setCategoryName(newCategoryName);
+        const newCategory = await addCategory(newCategoryName);
+        setCategories([...categories, newCategory]);
+        setModals({...modals,addedOrModified:true, form:false})
         setFormErrors('');
       } catch (error) {
         console.error('Erreur lors de l\'ajout de la catégorie:', error);
       }
-    }else{
-      setFormErrors('Votre catégorie existe déja.')
+    } else {
+      setFormErrors('Votre catégorie existe déjà.');
     }
   };
 
   const resetCategoryToEdit = () => {
     setCategoryToEdit(null);
-  }
+  };
 
   function checkCategoryExist(categoryName: string, categories: Category[]) {
     return !categories.some(category => category.name === categoryName);
   }
 
-  const handleCloseDeletedModal = () =>{
-    setShowDeletedModal(false);
+  const handleCloseDeletedModal = () => {
+    setModals({ ...modals, deleted: false });
+    setCategoryToDelete(null);
+  };
+
+  const handleShowFormModal = (show: boolean) => {
+    setModals({ ...modals, form: show });
+  };
+
+  const handleCloseConfirmationModal=()=>{
+    setModals({...modals, addedOrModified:false});
+    setCategoryToEdit(null);
+    setCategoryName('');
   }
 
   return (
@@ -135,7 +135,7 @@ const categorySettings = () => {
                 {category.name}
                 <span>
                   <i className="fa-solid fa-pen-to-square m-2 text-warning" onClick={() => handleEditCategory(category.id)}></i>
-                  <i className="fa-solid fa-trash m-2 text-danger" onClick={() => { setCategoryToDelete(category); setShowConfirmDeleteModal(true); }}></i>
+                  <i className="fa-solid fa-trash m-2 text-danger" onClick={() => { setCategoryToDelete(category); setModals({ ...modals, confirmDelete: true }) }}></i>
                 </span>
               </td>
             </tr>
@@ -146,8 +146,8 @@ const categorySettings = () => {
         onAddCategory={handleAddCategory}
         categoryToUpdate={categoryToEdit}
         onUpdateCategory={handleUpdateCategory}
-        showFormModal={showFormModal}
-        setShowFormModal={setShowFormModal}
+        showFormModal={modals.form}
+        setShowFormModal={handleShowFormModal}
         resetCategoryToEdit={resetCategoryToEdit}
         formErrors={formErrors}
       />
@@ -166,14 +166,14 @@ const categorySettings = () => {
               ))}
             </ul>
           )}
-          <Button onClick={() => setShowFormModal(true)}>Ajouter une catégorie</Button>
+          <Button onClick={() => setModals({ ...modals, form: true })}>Ajouter une catégorie</Button>
         </div>
       </nav>
 
-        <Deleted show={showDeletedModal} onHide={handleCloseDeletedModal} categoryName={categoryToDelete?.name}></Deleted>
-        <ConfirmDelete show={showConfirmDeleteModal} onHide={()=>setShowConfirmDeleteModal} categoryToDelete={categoryToDelete} handleDeleteCategory={handleDeleteCategory} />
+      <Deleted show={modals.deleted} onHide={handleCloseDeletedModal} categoryName={categoryToDelete?.name}></Deleted>
+      <ConfirmDelete show={modals.confirmDelete} onHide={() => setModals({...modals,confirmDelete:false})} categoryToDelete={categoryToDelete} handleDeleteCategory={handleDeleteCategory} />
+      <AddedOrModified show={modals.addedOrModified} onHide={()=>handleCloseConfirmationModal()} categoryName={categoryName} categoryToUpdate={categoryToEdit}/>
     </div>
   );
-}
-
+};
 export default categorySettings;

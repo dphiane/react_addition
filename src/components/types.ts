@@ -16,7 +16,7 @@ export interface ProductsInterface {
     name: string;
   }
 
-  export interface Invoice {
+  export interface InvoiceInterface {
     id: number,
     date: string,
     tva: number,

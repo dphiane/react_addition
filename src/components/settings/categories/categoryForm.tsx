@@ -18,7 +18,6 @@ interface CategoryFormProps {
 
 const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateCategory, onAddCategory, showFormModal, setShowFormModal, resetCategoryToEdit, formErrors }) => {
   const [ categoryName, setCategoryName ] = useState<string>('');
-  const [ showConfirmationModal, setShowConfirmationModal ] = useState<boolean>(false);
   const [ isSubmitted,setIsSubmitted]= useState<boolean>(false);
 
   useEffect(() => {
@@ -30,8 +29,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateC
 
   useEffect(()=>{
     if(isSubmitted && formErrors.length === 0 ){
-      handleCloseFormModal();
-      setShowConfirmationModal(true);
+      setCategoryName('');
+      setIsSubmitted(false);
     } 
   },[isSubmitted,formErrors])
 
@@ -40,12 +39,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateC
     resetCategoryToEdit();
     setCategoryName('');
   };
-
-  const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-    setCategoryName('');
-    resetCategoryToEdit();
-  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,20 +82,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateC
             </div>
           </Form>
         </Modal.Body>
-      </Modal>
-
-      <Modal show={showConfirmationModal} onHide={handleCloseConfirmationModal}>
-        <Modal.Header closeButton closeVariant="white" className='bg-dark'>
-          <Modal.Title>Confirmation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className='bg-dark'>
-          La catégorie {categoryName} a été {categoryToUpdate ? 'modifiée' : 'ajoutée'} avec succès.
-        </Modal.Body>
-        <Modal.Footer className='bg-dark'>
-          <Button variant="secondary" onClick={handleCloseConfirmationModal}>
-            Fermer
-          </Button>
-        </Modal.Footer>
       </Modal>
     </>
   );
