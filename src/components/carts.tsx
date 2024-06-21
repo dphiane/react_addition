@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
 import TableSelection from './tableSelection';
 import { calculateTotalPrice , calculateTotalTVA } from '../functions/cart';
+import ReactToPrint from 'react-to-print';
+import PrintCart from './printCart';
 
 export interface CartProps {
-  cart: { [ key: string ]: { quantity: number; price: number; tva: number, comment?: string; } };
+  cart: { [ key: string ]: { quantity: number; price: number; tva: number } };
   updateQuantity: (product: string, quantity: number, price: number) => void;
   initialQuantity: number;
   onTableSelect: (selectedTable: number | null) => void
@@ -22,6 +24,8 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
   const [ showModal, setShowModal ] = useState(false);
   const [ selectedProduct, setSelectedProduct ] = useState<string | null>(null);
   const [ quantity, setQuantity ] = useState(initialQuantity);
+  const componentRef = useRef<HTMLDivElement>(null);
+
   const [selectedTable, setSelectedTable] = useState<number | null>(() => {
     const storedTable = localStorage.getItem('selectTable');
     return storedTable ? parseInt(storedTable.split("_")[1]) : 1
@@ -82,7 +86,17 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
         <div className='d-flex flex-column'>
           <TableSelection onTableSelect={handleTableSelect} />
           <p className='text-center m-0'>{Object.keys(cart).length} article{Object.keys(cart).length > 1 ? 's' : ''}</p>
-          <hr />
+          <ReactToPrint
+                trigger={() => <button className='btn btn-secondary rounded-0'><i className="fa-solid fa-print"></i> Imprimer</button>}
+                content={() => componentRef.current}
+              />
+        </div>
+        <div style={{ display: 'none' }}>
+          <PrintCart 
+            cart={cart} 
+            table={selectedTable!}
+            ref={componentRef}>
+          </PrintCart>
         </div>
         <div>
           <ul>

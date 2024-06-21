@@ -45,3 +45,10 @@ export interface PaymentsInterface {
   amount: number;
   paymentMethod: string;
 }
+
+export interface CartItem {
+  quantity: number;
+  price: number;
+  tva: number;
+  id: number;
+}
