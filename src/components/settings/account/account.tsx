@@ -75,7 +75,6 @@ const Account = () => {
         }
     };
 
-
     return (
         <>
             {decodedToken ? (
