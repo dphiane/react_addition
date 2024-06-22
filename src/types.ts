@@ -14,8 +14,9 @@ export interface ProductsInterface {
   export interface CategoryInterface {
     id: number;
     name: string;
+    products: ProductsInterface[];
   }
-
+  
   export interface InvoiceInterface {
     id: number,
     date: string,
@@ -59,7 +60,25 @@ export interface CartProps {
   onTableSelect: (selectedTable: number | null) => void;
 }
 
-export interface Category {
-  id: number;
-  name: string;
+export interface PaymentMethodTotal {
+  method: string;
+  count: number;
+  total: number;
 }
+
+export interface State {
+  invoices: InvoiceInterface[];
+  totalTTC: number;
+  totalHT: number;
+  averageBasket: number;
+  paymentsMethodTotal: PaymentMethodTotal[];
+  loading: boolean;
+  errors: string;
+}
+
+export type Action =
+  | { type: 'FETCH_INVOICES_REQUEST' }
+  | { type: 'FETCH_INVOICES_SUCCESS'; payload: InvoiceInterface[] }
+  | { type: 'FETCH_INVOICES_FAILURE'; payload: string }
+  | { type: 'CALCULATE_TOTALS'; payload: InvoiceInterface[] }
+  | { type: 'SET_PAYMENTS_TOTALS'; payload: PaymentMethodTotal[] };

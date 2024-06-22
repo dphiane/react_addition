@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Category,ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface } from 'types';
+import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface } from 'types';
 
 const API_URL = 'https://localhost:8000/api';
 const API_URL_FORGOT_PASSWORD= 'https://localhost:8000/forgot_password/';
@@ -102,6 +102,28 @@ export const fetchTvas = async (): Promise<TvaInterface[]> => {
   return response.data[ "hydra:member" ];
 };
 
+export const updateTva = async (updatedTva:number, tvaToEditId:number):Promise<TvaInterface>=>{
+  const response = await axios.put(
+    `${API_URL}/tvas/${tvaToEditId}`,
+    { tva: updatedTva },
+    { headers: { 'Content-Type': 'application/ld+json' } }
+  );
+  return response.data;
+}
+
+export const deleteTva = async (tvaID:number): Promise<void> =>{
+  await axios.delete(`${API_URL}/tvas/${tvaID}`);
+}
+
+export const addTva = async(newTva:number):Promise<TvaInterface> => {
+  const response = await axios.post(
+    `${API_URL}/tvas`,
+    { tva: newTva },
+    { headers: { 'Content-Type': 'application/ld+json' } }
+  );
+  return response.data;
+}
+
 export const fetchCategories = async (): Promise<CategoryInterface[]> => {
   const response = await axios.get(`${API_URL}/categories`);
   return response.data[ "hydra:member" ];
@@ -111,7 +133,7 @@ export const deleteCategory = async (categoryId: number): Promise<void> => {
   await axios.delete(`${API_URL}/categories/${categoryId}`);
 };
 
-export const updateCategory = async (categoryId: number, updatedCategoryName: string): Promise<Category> => {
+export const updateCategory = async (categoryId: number, updatedCategoryName: string): Promise<CategoryInterface> => {
   const response = await axios.put(
     `${API_URL}/categories/${categoryId}`,
     { name: updatedCategoryName },
@@ -120,7 +142,7 @@ export const updateCategory = async (categoryId: number, updatedCategoryName: st
   return response.data;
 };
 
-export const addCategory = async (newCategoryName: string): Promise<Category> => {
+export const addCategory = async (newCategoryName: string): Promise<CategoryInterface> => {
   const response = await axios.post(
     `${API_URL}/categories`,
     { name: newCategoryName },

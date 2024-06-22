@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cart from "../components/cartForPayment";
 import Calculator from '../components/calculator';
-import ClosePayment from "../components/paymentModals/closePayment";
+import ClosePayment from "../components/modals/payment/closePayment";
 import { calculateTotalTVA } from "../utils/cart";
 import axios from 'axios';
 import { ProductsInterface } from "../types";

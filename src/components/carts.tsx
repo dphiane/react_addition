@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Modal } from 'react-bootstrap';
 import TableSelection from './tableSelection';
 import { calculateTotalPrice, calculateTotalTVA } from '../utils/cartUtils';
 import ReactToPrint from 'react-to-print';
 import PrintCart from './printCart';
-import CartModal from './cartModal';
-import { CartProps, CartItemType } from '../types';
+import CartModal from './modals/cartModal';
+import { CartProps } from '../types';
 
 const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onTableSelect }) => {
   const [showModal, setShowModal] = useState(false);
