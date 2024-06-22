@@ -5,13 +5,9 @@ import Deleted from "./modals/deleted";
 import ConfirmDelete from "./modals/confirmDelete";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import { fetchCategories, deleteCategory, updateCategory, addCategory } from "../../api";
+import { fetchCategories, deleteCategory, updateCategory, addCategory } from "../../../api";
 import AddedOrModified from "./modals/addedOrModified";
-
-export interface Category {
-  id: number;
-  name: string;
-}
+import { Category } from "types";
 
 const categorySettings = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -60,6 +56,7 @@ const categorySettings = () => {
     const categoryToEdit = categories.find(category => category.id === categoryId);
     if (categoryToEdit) {
       setCategoryToEdit(categoryToEdit);
+      setCategoryName(categoryToEdit.name)
     } else {
       setFormErrors('Catégorie non trouvée.');
     }
@@ -116,8 +113,8 @@ const categorySettings = () => {
 
   const handleCloseConfirmationModal=()=>{
     setModals({...modals, addedOrModified:false});
-    setCategoryToEdit(null);
     setCategoryName('');
+    setCategoryToEdit(null);
   }
 
   return (

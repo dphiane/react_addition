@@ -7,15 +7,15 @@ import "./styles/media-queries.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "./axiosConfig";
 
-import Command from "./components/command";
-import LoginForm from "./components/login";
-import Payment from "./components/payment";
-import SeatingPlan from "./components/seatingPlan";
-import Settings from "./components/settings/settings";
+import Command from "./pages/command";
+import LoginForm from "./pages/login";
+import Payment from "./pages/payment";
+import SeatingPlan from "./pages/seatingPlan";
+import Settings from "./pages/settings";
 import ProtectedRoute from "./protectedRoute";
-import RegisterForm from "./components/registerForm";
-import NotFound from "./components/NotFound";
-import ResetPasswordPage from "./components/resetPasswordPage";
+import RegisterForm from "./pages/registerForm";
+import NotFound from "./pages/NotFound";
+import ResetPasswordPage from "./pages/resetPasswordPage";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Carts, { CartItemType } from './carts';
-import Categories from './categories';
+import Carts from '../components/carts';
+import  { CartItem } from '../types';
+import Categories from '../components/categories';
 import { getCartFromLocalStorage } from '../utils/cartUtils';
 
 export default function Command() {
-    const [cart, setCart] = useState<{ [key: string]: CartItemType }>({});
+    const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
     const [selectedTable, setSelectedTable] = useState<number | null>(null);
     const initialQuantity: number = 1;
 

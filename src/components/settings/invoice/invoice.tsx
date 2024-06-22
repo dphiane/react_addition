@@ -6,7 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import fr from "date-fns/locale/fr";
 import axios from "axios";
 import InvoiceForm from "./invoiceForm";
-import { InvoiceInterface } from "components/types";
+import { InvoiceInterface } from "../../../types";
 import Loader from "../../loader";
 import {formatDate,formatTime} from "../../utils";
 

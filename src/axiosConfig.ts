@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getCurrentUser } from './components/api';
+import { getCurrentUser } from './api';
 
 axios.interceptors.request.use(
   (config) => {

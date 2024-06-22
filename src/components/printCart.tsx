@@ -1,5 +1,5 @@
 import React from "react";
-import { calculateTotalPrice, calculateTotalTVA } from '../functions/cart';
+import { calculateTotalPrice, calculateTotalTVA } from '../utils/cart';
 
 interface PrintCartProps {
     cart: { [ key: string ]: { quantity: number; price: number; tva: number } };

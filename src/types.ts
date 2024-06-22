@@ -52,3 +52,14 @@ export interface CartItem {
   tva: number;
   id: number;
 }
+export interface CartProps {
+  cart: { [key: string]: { quantity: number; price: number; tva: number; id: number } };
+  updateQuantity: (product: string, quantity: number, price: number) => void;
+  initialQuantity: number;
+  onTableSelect: (selectedTable: number | null) => void;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+}

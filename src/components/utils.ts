@@ -1,4 +1,4 @@
-import { TvaInterface, CategoryInterface } from './types';
+import { TvaInterface, CategoryInterface } from '../types';
 
 export const getCategoryNameFromIRI = (categoryIRI: string | undefined, categories: CategoryInterface[]) => {
   if (!categoryIRI) {

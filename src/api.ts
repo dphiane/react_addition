@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface } from './types';
-import { Category } from './settings/categories/category';
+import { Category,ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface } from 'types';
 
 const API_URL = 'https://localhost:8000/api';
 const API_URL_FORGOT_PASSWORD= 'https://localhost:8000/forgot_password/';

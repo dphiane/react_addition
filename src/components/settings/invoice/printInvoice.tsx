@@ -1,5 +1,5 @@
 import React from "react";
-import { InvoiceInterface, PaymentsInterface, ProductsInterface } from "components/types";
+import { InvoiceInterface, PaymentsInterface, ProductsInterface } from "../../../types";
 
 interface PrintInvoiceProps {
     invoice: InvoiceInterface | null;

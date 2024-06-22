@@ -3,7 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import ConfirmLogout from "./modals/confirmLogout";
-import { changePassword, getCurrentUser, removeToken } from '../../api';
+import { changePassword, getCurrentUser, removeToken } from '../../../api';
 import { jwtDecode } from "jwt-decode";
 import Loader from "../../loader";
 import PasswordChanged from "./modals/passwordChanged";

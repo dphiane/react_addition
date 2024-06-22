@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal, FormControl } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { ProductsInterface, TvaInterface, CategoryInterface } from '../../types';
+import { ProductsInterface, TvaInterface, CategoryInterface } from '../../../types';
 
 
 interface ProductsFormProps {

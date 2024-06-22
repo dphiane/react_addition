@@ -1,12 +1,12 @@
 import React from 'react';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import Products from './products/products';
-import SettingsCategory from './categories/category';
-import Tva from './tva/tva';
-import Invoices from './invoice/invoice';
-import Activity from './activity/activity';
-import Account from './account/account';
+import Products from '../components/settings/products/products';
+import SettingsCategory from '../components/settings/categories/category';
+import Tva from '../components/settings/tva/tva';
+import Invoices from '../components/settings/invoice/invoice';
+import Activity from '../components/settings/activity/activity';
+import Account from '../components/settings/account/account';
 
 function Settings() {
   return (

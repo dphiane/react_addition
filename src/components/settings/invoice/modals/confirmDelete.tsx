@@ -1,11 +1,11 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import { Invoice } from "components/types";
+import { InvoiceInterface } from "types";
 
 interface ConfirmDelete{
 show: boolean;
 onHide: ()=>void;
-editInvoice: Invoice;
+editInvoice: InvoiceInterface;
 handleDeleteInvoice : (id:number)=>void;
 setShowDeleteModal: (value:boolean)=>void;
 }

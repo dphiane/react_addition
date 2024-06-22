@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
-import { ProductsInterface, TvaInterface } from './types';
+import { ProductsInterface, TvaInterface } from '../types';
 
 interface CartItemType {
   quantity: number;
