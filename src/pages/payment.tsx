@@ -3,8 +3,8 @@ import Cart from "../components/cartForPayment";
 import Calculator from '../components/calculator';
 import ClosePayment from "../components/modals/payment/closePayment";
 import { calculateTotalTVA } from "../utils/cart";
-import axios from 'axios';
-import { ProductsInterface } from "../types";
+import { ProductsInterface ,InvoiceData} from "../types";
+import { createInvoice } from "api";
 
 const Payment = () => {
     const [payments, setPayments] = useState<{ amount: number, paymentMethod: string }[]>([]);
@@ -41,21 +41,25 @@ const Payment = () => {
     };
 
     const saveInvoice = async () => {
-        const invoiceData = {
-            products: products.map(product => ({ 
-                id: product.id ,
-                quantity: product.quantity, 
-            })), 
-            tva: calculateTotalTVA(products),
-            total: totalCart,
-            payments: payments.map(payment => ({
-                amount: payment.amount,
-                paymentMethod: payment.paymentMethod,
-            })),
-        };
-
+        const cleanedProducts = products
+        .filter(product => product.id !== undefined)
+        .map(product => ({
+          id: product.id!,
+          quantity: product.quantity
+        }));
+    
+      const invoiceData: InvoiceData = {
+        products: cleanedProducts,
+        tva: calculateTotalTVA(products),
+        total: totalCart,
+        payments: payments.map(payment => ({
+          amount: payment.amount,
+          paymentMethod: payment.paymentMethod,
+        })),
+      };
+    
         try {
-            await axios.post('https://localhost:8000/api/create_invoice', invoiceData);
+            await createInvoice(invoiceData);
             console.log('Invoice saved successfully');
         } catch (error) {
             console.error('Error saving invoice', error);

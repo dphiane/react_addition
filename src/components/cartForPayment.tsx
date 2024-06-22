@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { calculateTotalPrice, calculateTotalTVA } from "../utils/cart";
 import { ProductsInterface } from '../types';
-import axios from "axios";
+import { getMultipleProducts } from "api";
 
 interface CartItem {
   quantity: number;
@@ -45,11 +45,7 @@ const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onPr
 
   const fetchProductDetails = async (productIds: number[]) => {
     try {
-      const response = await axios.get('https://localhost:8000/api/multiple', {
-        params: {
-          ids: productIds.join(',')
-        }
-      });
+      const response = await getMultipleProducts(productIds);
       const productsWithQuantityAndTVA = response.data.map((product: ProductsInterface) => {
         const cartItem = Object.entries(cart).find(([key, item]) => item.id === product.id);
         return {
