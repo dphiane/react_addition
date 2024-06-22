@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { forgotPassword } from "./api";
-import ResetPasswordSuccess from "./resetPasswordSuccess";
+import { forgotPassword } from "../api";
+import ResetPasswordSuccess from "../components/modals/resetPasswordSuccess";
 // @ts-ignore
 import Image from "../assets/forgot-password.jpg";
 

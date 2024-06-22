@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import fr from "date-fns/locale/fr";
-import axios from "axios";
+import { fetchInvoices } from "api";
 import InvoiceForm from "./invoiceForm";
-import { InvoiceInterface } from "components/types";
+import { InvoiceInterface } from "types";
 import Loader from "../../loader";
-import {formatDate,formatTime} from "../../utils";
+import {formatDate,formatTime} from "utils/formatDate";
 
 // @ts-ignore
 registerLocale("fr", fr);
@@ -25,18 +25,18 @@ const Invoices = () => {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     
     useEffect(() => {
-        fetchInvoices();
+        getInvoices();
     }, []);
 
     const resetForm = () => {
         setInvoiceToEdit(null);
     };
 
-    const fetchInvoices = async () => {
+    const getInvoices = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('https://localhost:8000/api/invoices');
-            setInvoices(response.data[ 'hydra:member' ].reverse());
+            const response = await fetchInvoices();
+            setInvoices(response['hydra:member'].reverse());
         } catch (error) {
             console.error('Erreur lors de la récupération des factures', error);
             setErrors('Une erreur s\'est produite lors du chargement des factures');
@@ -51,8 +51,9 @@ const Invoices = () => {
             setInvoiceToEdit(invoiceToEdit);
         }
     };
+
     const refreshInvoices = () => {
-        fetchInvoices();
+        getInvoices();
     };
 
     const filteredInvoices = invoices.filter(invoice => {

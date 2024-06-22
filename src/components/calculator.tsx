@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useRef } from "react";
-import PaymentModal from './modal/errorPaymentModal';
+import PaymentModal from './modals/payment/errorPaymentModal';
 // @ts-ignore
 import comma from "../assets/comma.png";
 

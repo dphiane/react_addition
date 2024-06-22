@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { calculateTotalPrice, calculateTotalTVA } from "../functions/cart";
-import { ProductsInterface } from './types';
+import { calculateTotalPrice, calculateTotalTVA } from "../utils/cart";
+import { ProductsInterface } from '../types';
 import axios from "axios";
 
 interface CartItem {

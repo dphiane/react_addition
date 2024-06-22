@@ -1,4 +1,4 @@
-import { CategoryInterface } from "components/types";
+import { CategoryInterface } from "types";
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 

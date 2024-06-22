@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 import Deleted from "./modals/deleted";
 import ConfirmDelete from "./modals/confirmDelete";
 import AddedOrModified from "./modals/addedOrModified";
-import { fetchTvas, fetchCategories, fetchProducts, deleteProduct, addProduct, updateProduct } from '../../api';
-import { ProductsInterface, TvaInterface, CategoryInterface } from '../../types';
-import { getCategoryNameFromIRI, getTvaFromIri } from '../../utils';
+import { fetchTvas, fetchCategories, fetchProducts, deleteProduct, addProduct, updateProduct } from '../../../api';
+import { ProductsInterface, TvaInterface, CategoryInterface } from '../../../types';
+import { getCategoryNameFromIRI, getTvaFromIri } from '../../../utils/getFromIri';
 
 function Products() {
   const [tvas, setTvas] = useState<TvaInterface[]>([]);

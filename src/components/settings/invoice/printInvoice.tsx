@@ -1,5 +1,5 @@
 import React from "react";
-import { InvoiceInterface, PaymentsInterface, ProductsInterface } from "components/types";
+import { InvoiceInterface, PaymentsInterface, ProductsInterface } from "types";
 
 interface PrintInvoiceProps {
     invoice: InvoiceInterface | null;
@@ -44,7 +44,6 @@ const PrintInvoice = React.forwardRef<HTMLDivElement, PrintInvoiceProps>(({
                 ))}
                 <hr />
             </ul>
-
             <ul>
                 <li className="position-relative">Total HT <span className="position-absolute end-0 me-2">{invoice ? invoice.total - invoice.tva : 0}€</span></li>
                 <li className="position-relative">Total TVA <span className="position-absolute end-0 me-2">{invoice?.tva}€</span></li>

@@ -8,16 +8,23 @@ interface Tva {
 
 interface TvaFormProps {
   tvaToUpdate: Tva | null;
-  onSubmit: (updatedTva: number) => void;
+  onUpdateTva: (updatedTva: number) => void;
   onAddTva: (newTva: number) => void;
   showFormModal: boolean;
   setShowFormModal:(value:boolean)=>void;
-  reset: ()=>void;
   error: string;
 }
 
-const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva,setShowFormModal,showFormModal,reset,error }) => {
+const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onUpdateTva, onAddTva,setShowFormModal,showFormModal,error}) => {
   const [tva, setTva] = useState<number>();
+  const [ isSubmitted,setIsSubmitted]= useState<boolean>(false);
+
+  useEffect(()=>{
+    if(isSubmitted && error.length === 0 ){
+      setTva(0);
+      setIsSubmitted(false);
+    } 
+  },[isSubmitted,error])
 
   useEffect(() => {
     if (tvaToUpdate) {
@@ -28,8 +35,9 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva,setSh
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitted(true);
       if (tvaToUpdate) {
-        onSubmit(tva!);
+        onUpdateTva(tva!);
       } else {
         onAddTva(tva!);
     }
@@ -37,8 +45,9 @@ const TvaForm: React.FC<TvaFormProps> = ({ tvaToUpdate, onSubmit, onAddTva,setSh
 
   const handleCloseModal=()=>{
     setTva(0);
-    reset();
+    setShowFormModal(false);
   }
+
   return (
     <>
       <Modal show={showFormModal} onHide={()=>handleCloseModal()}>

@@ -1,11 +1,11 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
-import {Tva} from "../tva";
+import {TvaInterface} from "types";
 
 interface AddedOrModifiedInterface{
 show: boolean;
 onHide: ()=>void;
-tva: Tva | null;
+tva: TvaInterface | null;
 updated: boolean;
 }
 
@@ -16,7 +16,7 @@ const AddedOrModified = ({show,onHide,tva, updated}:AddedOrModifiedInterface) =>
                 <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
             <Modal.Body className='bg-dark'>
-                La tva de {tva?.tva} a été {updated ? 'ajoutée' :'modifiée'} avec succès.
+                La tva de {tva?.tva} a été {updated ? 'modifiée' :'ajoutée'} avec succès.
             </Modal.Body>
             <Modal.Footer className='bg-dark'>
                 <Button variant="secondary" onClick={() => onHide()}>

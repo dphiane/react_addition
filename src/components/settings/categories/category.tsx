@@ -5,16 +5,12 @@ import Deleted from "./modals/deleted";
 import ConfirmDelete from "./modals/confirmDelete";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import { fetchCategories, deleteCategory, updateCategory, addCategory } from "../../api";
+import { fetchCategories, deleteCategory, updateCategory, addCategory } from "../../../api";
 import AddedOrModified from "./modals/addedOrModified";
-
-export interface Category {
-  id: number;
-  name: string;
-}
+import { CategoryInterface } from "types";
 
 const categorySettings = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryInterface[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [modals, setModals] = useState({
     addedOrModified: false,
@@ -23,8 +19,8 @@ const categorySettings = () => {
     confirmDelete: false,
   });
   const [formErrors, setFormErrors] = useState<string>('');
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-  const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<CategoryInterface | null>(null);
+  const [categoryToEdit, setCategoryToEdit] = useState<CategoryInterface | null>(null);
   const [categoryName, setCategoryName]= useState<string>('');
   const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -39,7 +35,7 @@ const categorySettings = () => {
   const fetchData = async () => {
     try {
       const response = await fetchCategories();
-      const sortedCategories = response.sort((a: Category, b: Category) => a.name.localeCompare(b.name));
+      const sortedCategories = response.sort((a: CategoryInterface, b: CategoryInterface) => a.name.localeCompare(b.name));
       setCategories(sortedCategories);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
@@ -60,6 +56,7 @@ const categorySettings = () => {
     const categoryToEdit = categories.find(category => category.id === categoryId);
     if (categoryToEdit) {
       setCategoryToEdit(categoryToEdit);
+      setCategoryName(categoryToEdit.name)
     } else {
       setFormErrors('Catégorie non trouvée.');
     }
@@ -101,7 +98,7 @@ const categorySettings = () => {
     setCategoryToEdit(null);
   };
 
-  function checkCategoryExist(categoryName: string, categories: Category[]) {
+  function checkCategoryExist(categoryName: string, categories: CategoryInterface[]) {
     return !categories.some(category => category.name === categoryName);
   }
 
@@ -116,8 +113,8 @@ const categorySettings = () => {
 
   const handleCloseConfirmationModal=()=>{
     setModals({...modals, addedOrModified:false});
-    setCategoryToEdit(null);
     setCategoryName('');
+    setCategoryToEdit(null);
   }
 
   return (

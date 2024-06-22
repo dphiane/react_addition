@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Cart from "./cartForPayment";
-import Calculator from './calculator';
-import ClosePayment from "./modal/closePayment";
-import { calculateTotalPrice, calculateTotalTVA } from "../functions/cart";
+import Cart from "../components/cartForPayment";
+import Calculator from '../components/calculator';
+import ClosePayment from "../components/modals/payment/closePayment";
+import { calculateTotalTVA } from "../utils/cart";
 import axios from 'axios';
-import { ProductsInterface } from "./types";
+import { ProductsInterface } from "../types";
 
 const Payment = () => {
     const [payments, setPayments] = useState<{ amount: number, paymentMethod: string }[]>([]);

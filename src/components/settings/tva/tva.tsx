@@ -7,22 +7,21 @@ import TvaForm from "./tvaForm";
 import ConfirmDelete from "./modals/confirmDelete";
 import Deleted from "./modals/deleted";
 import AddedOrModified from "./modals/addedOrModified";
+import { TvaInterface } from "types";
+import { deleteTva, fetchTvas,updateTva,addTva } from "api";
 
-export interface Tva {
-  id: number;
-  tva: number;
-}
-
-function Tva() {
-  const [ tvas, setTvas ] = useState<Tva[]>([]);
+const Tva= () => {
+  const [ tvas, setTvas ] = useState<TvaInterface[]>([]);
   const [ currentPage, setCurrentPage ] = useState(1);
-  const [ showDeleteConfirmation, setShowDeleteConfirmation ] = useState(false);
-  const [ showDeletedModal, setShowDeletedModal ] = useState<boolean>(false);
-  const [showModalAddedOrModified, setShowModalAddedOrModified] = useState<boolean>(false);
-
-  const [ showFormModal, setShowFormModal ] = useState(false);
-  const [ tvaToDelete, setTvaToDelete ] = useState<Tva | null>(null);
-  const [ tvaToEdit, setTvaToEdit ] = useState<Tva | null>(null);
+  const [modals, setModals]=useState({
+    addedOrModified: false,
+    form: false,
+    deleted: false,
+    confirmDelete: false,
+  });
+  const [ tvaToDelete, setTvaToDelete ] = useState<TvaInterface | null>(null);
+  const [ tvaToEdit, setTvaToEdit ] = useState<TvaInterface | null>(null);
+  const [lastAddedOrUpdatedTva, setLastAddedOrUpdatedTva] = useState<TvaInterface | null>(null);
   const [updated, setUpdated]= useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const itemsPerPage = 10;
@@ -32,24 +31,23 @@ function Tva() {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   useEffect(() => {
-    fetchTvas();
+    getTvas();
   }, []);
 
-  const fetchTvas = async () => {
+  const getTvas = async () => {
     try {
-      const response = await axios.get('https://localhost:8000/api/tvas');
-      setTvas(response.data[ "hydra:member" ]);
+      const response = await fetchTvas();
+      setTvas(response);
     } catch (error) {
       console.error('Erreur lors de la récupération des taxes:', error);
     }
   };
 
-  const handleDeleteTva = async (tvaId: number) => {
+  const handleDeleteTva = async (tvaId:number) => {
     try {
-      await axios.delete(`https://localhost:8000/api/tvas/${tvaId}`);
+      await deleteTva(tvaId);
       setTvas(tvas.filter(tva => tva.id !== tvaId));
-      setShowDeleteConfirmation(false);
-      setShowDeletedModal(true);
+      setModals({...modals,confirmDelete:false,deleted:true})
     } catch (error) {
       console.error('Erreur lors de la suppression de la taxe:', error);
     }
@@ -64,28 +62,30 @@ function Tva() {
 
   const reset = () => {
     setError('')
-    setShowFormModal(false)
+    setModals({
+      addedOrModified: false,
+      form: false,
+      deleted: false,
+      confirmDelete: false,
+    });
     setTvaToDelete(null);
     setTvaToEdit(null);
     setUpdated(false);
+    setLastAddedOrUpdatedTva(null)
   }
 
   const handleUpdateTva = async (updatedTva: number) => {
     if (tvaToEdit) {
       try {
-        const response = await axios.put(
-          `https://localhost:8000/api/tvas/${tvaToEdit.id}`,
-          { tva: updatedTva },
-          { headers: { 'Content-Type': 'application/ld+json' } }
-        );
-        const updatedTvaData = response.data;
+        const response = await updateTva(updatedTva,tvaToEdit.id);
+        const updatedTvaData = response;
         setTvas(tvas.map(tva =>
           tva.id === updatedTvaData.id ? updatedTvaData : tva
         ));
         console.log(`TVA mise à jour avec succès:`, updatedTvaData);
+        setLastAddedOrUpdatedTva(response);
         setUpdated(true);
-        setShowModalAddedOrModified(true)
-        reset()
+        setModals({...modals,addedOrModified:true})
       } catch (error) {
         console.error('Erreur lors de la mise à jour de la taxe:', error);
       }
@@ -104,17 +104,17 @@ function Tva() {
     }
 
     try {
-      const response = await axios.post(
-        'https://localhost:8000/api/tvas',
-        { tva: newTva },
-        { headers: { 'Content-Type': 'application/ld+json' } }
-      );
-      setTvas([ ...tvas, response.data ]);
-      reset();
-      setShowModalAddedOrModified(true);
+      const response = await addTva(newTva) 
+      setLastAddedOrUpdatedTva(response); 
+      setTvas([ ...tvas, response ]);
+      setModals({...modals,addedOrModified:true,form:false})
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la taxe:', error);
     }
+  };
+
+  const setShowFormModal = (value: boolean): void => {
+    setModals({ ...modals, form: value });
   };
 
   return (
@@ -133,7 +133,7 @@ function Tva() {
                   <i className="fa-solid fa-pen-to-square m-2 text-warning"
                     onClick={() => handleEditTva(tva.id)}></i>
                   <i className="fa-solid fa-trash m-2 text-danger"
-                    onClick={() => { setTvaToDelete(tva); setShowDeleteConfirmation(true) }}></i>
+                    onClick={() => { setTvaToDelete(tva); setModals({...modals,confirmDelete:true}) }}></i>
                 </span>
               </td>
             </tr>
@@ -143,16 +143,15 @@ function Tva() {
       <TvaForm
         onAddTva={handleAddTva}
         tvaToUpdate={tvaToEdit}
-        onSubmit={handleUpdateTva}
-        showFormModal={showFormModal}
-        setShowFormModal={setShowFormModal}
-        reset={reset}
+        onUpdateTva={handleUpdateTva}
+        showFormModal={modals.form}
+        setShowFormModal = {setShowFormModal}
         error={error}
       />
 
-      <ConfirmDelete show={showDeleteConfirmation} onHide={() => setShowDeleteConfirmation(false)} tvaToDelete={tvaToDelete} handleDeleteTva={() => handleDeleteTva(tvaToDelete?.id!)}></ConfirmDelete>
-      <Deleted show={showDeletedModal} onHide={() => setShowDeletedModal(false)} tva={tvaToDelete?.tva!} />
-      <AddedOrModified show={showModalAddedOrModified} onHide={()=>setShowModalAddedOrModified(false)} tva={tvaToEdit} updated={false} />
+      <ConfirmDelete show={modals.confirmDelete} onHide={() =>setModals({...modals,confirmDelete:false})} tvaToDelete={tvaToDelete} handleDeleteTva={() => handleDeleteTva(tvaToDelete?.id!)}></ConfirmDelete>
+      <Deleted show={modals.deleted} onHide={() => reset()} tva={tvaToDelete?.tva!} />
+      <AddedOrModified show={modals.addedOrModified} onHide={()=>reset()} tva={lastAddedOrUpdatedTva} updated={updated} />
       <nav>
         <div className="d-flex justify-content-between ms-2 me-2">
           <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
@@ -167,7 +166,7 @@ function Tva() {
               ))}
             </ul>
           )}
-          <Button onClick={() => setShowFormModal(true)}>Ajouter une TVA</Button>
+          <Button onClick={() =>setModals({...modals,form:true})}>Ajouter une TVA</Button>
         </div>
       </nav>
     </div>

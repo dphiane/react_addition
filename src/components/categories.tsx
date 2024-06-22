@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import axios from 'axios';
-import { ProductsInterface, TvaInterface } from './types';
-
-interface CartItemType {
-  quantity: number;
-  price: number;
-  tva: number
-}
+import { ProductsInterface, TvaInterface,CategoryInterface, CartItem } from 'types';
+import { fetchTvas, fetchProducts, fetchCategories } from 'api';
 
 interface CategoryProps {
   addToCart: (name: string, quantity: number, price: number, tva: number, id: number) => void;
-  cart: { [ key: string ]: CartItemType };
-}
-interface CategoryInterface {
-  id: number;
-  name: string;
-  products: ProductsInterface[];
+  cart: { [ key: string ]: CartItem };
 }
 
 const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
@@ -37,9 +26,9 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
   
   useEffect(() => {
-    fetchCategories();
-    fetchProducts();
-    fetchTva();
+    getCategories();
+    getProducts();
+    getTva();
   }, []);
 
   useEffect(() => {
@@ -47,11 +36,11 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
     setCategoryProducts(filteredProducts);
   }, [ selectedCategory, products ]);
 
-  const fetchTva = async () => {
+  const getTva = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://localhost:8000/api/tvas');
-      setTvas(response.data[ "hydra:member" ]);
+      const response = await fetchTvas();
+      setTvas(response);
     } catch (error) {
       console.error('Erreur lors de la récupération des taxes:', error);
     } finally {
@@ -77,22 +66,23 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
     return tva ? tva.tva : 0;
   }
 
-  const fetchProducts = async () => {
+  const getProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://localhost:8000/api/products');
-      setProducts(response.data[ "hydra:member" ]);
+      const response = await fetchProducts();
+      setProducts(response);
     } catch (error) {
       console.error('Erreur lors de la récupération des articles:', error);
     } finally {
       setLoading(false);
     }
   };
-  const fetchCategories = async () => {
+
+  const getCategories = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://localhost:8000/api/categories');
-      const sortedCategories = response.data[ "hydra:member" ].sort((a: CategoryInterface, b: CategoryInterface) => a.name.localeCompare(b.name));
+      const response = await fetchCategories();
+      const sortedCategories = response.sort((a: CategoryInterface, b: CategoryInterface) => a.name.localeCompare(b.name));
       setCategories(sortedCategories);
     } catch (error) {
       console.error('Erreur lors de la récupération des catégories:', error);
@@ -108,8 +98,6 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
   const handleProductSelection = (product: ProductsInterface) => {
     addToCart(product.name, 1, product.price, getTvaFromIri(product.tva), product.id!);
   };
-
-
 
   return (
     <div className="container-fluid bg-dark d-flex">

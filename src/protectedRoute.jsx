@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { getCurrentUser, removeToken } from './components/api';
+import { getCurrentUser, removeToken } from './api';
 import { jwtDecode } from "jwt-decode";
 
 const ProtectedRoute = ({ element: Element }) => {

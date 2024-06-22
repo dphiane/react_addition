@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login, resetPasswordRequest } from './api';
+import { login, resetPasswordRequest } from '../api';
 import ResetPasswordRequest from "./resetPasswordRequest";
 // @ts-ignore
 import Image from "../assets/caisse-restaurant.png";
-import Loader from "./loader";
+import Loader from "../components/loader";
 
 const Login: React.FC = () => {
   const [loading, setLoading]= useState<boolean>(false);

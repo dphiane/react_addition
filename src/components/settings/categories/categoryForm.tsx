@@ -45,10 +45,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryToUpdate, onUpdateC
     setIsSubmitted(true);
     if (categoryName.trim() !== '') {
       if (categoryToUpdate) {
-        // Si une catégorie est mise à jour, appeler la fonction onUpdateCategory
         onUpdateCategory(categoryName);
       } else {
-        // Sinon, ajouter une nouvelle catégorie en appelant la fonction onAddCategory
         onAddCategory(categoryName);
       }
     }

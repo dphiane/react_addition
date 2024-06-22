@@ -1,5 +1,5 @@
 import React from "react";
-import Loader from "./loader";
+import Loader from "../components/loader";
 
 interface resetPasswordFormInterface {
   resetPasswordRequest: (e: React.FormEvent) => void;

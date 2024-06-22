@@ -1,11 +1,11 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { Products } from '../products';
+import { ProductsInterface } from 'types';
 
 interface ConfirmDeleteInterface{
     show:boolean;
     onHide: ()=>void;
-    productToDelete: Products | null;
+    productToDelete: ProductsInterface | null;
     handleDeleteProducts: (id:number)=> void;
 }
 
