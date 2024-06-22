@@ -10,6 +10,7 @@ import Loader from "../../loader";
 import { formatDate, formatTime } from "utils/formatDate";
 import ReactToPrint from 'react-to-print';
 import PrintInvoice from "./printInvoice";
+import FormErrors from "../../formErrors";
 
 interface InvoiceProps {
   editInvoice: InvoiceInterface | null;
@@ -216,7 +217,6 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
       <Modified show={modals.addedOrModified} onHide={() => closeConfirmModal()} invoice={editInvoice?.invoiceNumber!} />
       <Deleted show={modals.deleted} onHide={() => closeConfirmModal()} invoice={editInvoice?.invoiceNumber}></Deleted>
 
-
       <Modal show={modals.form} onHide={handleCloseFormModal}>
         <Modal.Header closeButton closeVariant="white" className='bg-dark'>
           <Modal.Title>Facture N°{editInvoice?.invoiceNumber}</Modal.Title>
@@ -224,6 +224,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
         <Modal.Body className='bg-dark rounded-bottom'>
 
           <Loader loading={loading}></Loader>
+
           <div style={{ display: 'none' }}>
             <PrintInvoice
               ref={componentRef}
@@ -245,15 +246,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
               />
             </p>
 
-            {formErrors.length > 0 && (
-              <div className="alert alert-danger">
-                <ul>
-                  {formErrors.map((error, index) => (
-                    <li key={index}>{error}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+ <FormErrors errors={formErrors} />
 
             {products.length > 0 && (
               <>

@@ -5,9 +5,10 @@ import Deleted from "./modals/deleted";
 import ConfirmDelete from "./modals/confirmDelete";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import { fetchCategories, deleteCategory, updateCategory, addCategory } from "../../../api";
+import { fetchCategories, deleteCategory, updateCategory, addCategory } from "api";
 import AddedOrModified from "./modals/addedOrModified";
 import { CategoryInterface } from "types";
+import Pagination from "components/pagination";
 
 const categorySettings = () => {
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
@@ -152,17 +153,12 @@ const categorySettings = () => {
         <div className="d-flex justify-content-between ms-2 me-2">
           <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
 
-          {categories.length > 10 && (
-            <ul className="pagination">
-              {Array.from({ length: Math.ceil(categories.length / itemsPerPage) }, (_, index) => (
-                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                  <button onClick={() => paginate(index + 1)} className="page-link">
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <Pagination 
+            itemsPerPage={itemsPerPage} 
+            totalItems={categories.length} 
+            currentPage={currentPage} 
+            paginate={paginate} 
+          />
           <Button onClick={() => setModals({ ...modals, form: true })}>Ajouter une catégorie</Button>
         </div>
       </nav>

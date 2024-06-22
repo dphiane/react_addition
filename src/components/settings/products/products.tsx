@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 import Deleted from "./modals/deleted";
 import ConfirmDelete from "./modals/confirmDelete";
 import AddedOrModified from "./modals/addedOrModified";
-import { fetchTvas, fetchCategories, fetchProducts, deleteProduct, addProduct, updateProduct } from '../../../api';
-import { ProductsInterface, TvaInterface, CategoryInterface } from '../../../types';
-import { getCategoryNameFromIRI, getTvaFromIri } from '../../../utils/getFromIri';
+import { fetchTvas, fetchCategories, fetchProducts, deleteProduct, addProduct, updateProduct } from 'api';
+import { ProductsInterface, TvaInterface, CategoryInterface } from 'types';
+import { getCategoryNameFromIRI, getTvaFromIri } from 'utils/getFromIri';
+import Pagination from "components/pagination";
 
 function Products() {
   const [tvas, setTvas] = useState<TvaInterface[]>([]);
@@ -205,17 +206,12 @@ function Products() {
 
       <div className="container-pagination">
         <Link to={"/"}><button className="btn btn-secondary ms-2">Retour</button></Link>
-        {filteredProducts.length > itemsPerPage && (
-          <ul className="pagination">
-            {Array.from({ length: Math.ceil(filteredProducts.length / itemsPerPage) }, (product, index) => (
-              <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                <button onClick={() => paginate(index + 1)} className="page-link">
-                  {index + 1}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <Pagination 
+            itemsPerPage={itemsPerPage} 
+            totalItems={filteredProducts.length} 
+            currentPage={currentPage} 
+            paginate={paginate} 
+          />
         <Button className="me-2" onClick={() => setModals({ ...modals, form: true })}>Ajouter un article</Button>
       </div>
     </div>
