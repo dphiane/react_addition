@@ -8,7 +8,8 @@ export default defineConfig({
     alias: {
       'utils': '/src/utils',
       'api': '/src/api.ts',
-      'types': '/src/types.ts'
+      'types': '/src/types.ts',
+      'components':'/src/components'
     }
   }
 })

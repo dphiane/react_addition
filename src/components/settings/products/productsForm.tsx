@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal, FormControl } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import { ProductsInterface, TvaInterface, CategoryInterface } from '../../../types';
-
+import FormErrors from 'components/formErrors';
 
 interface ProductsFormProps {
   productsToUpdate: ProductsInterface | null;
@@ -102,15 +102,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({ productsToUpdate, editProdu
         </Modal.Header>
         <Modal.Body className='bg-dark'>
           <Form onSubmit={handleSubmit}>
-            {formErrors.length > 0 && (
-              <div className="alert alert-danger">
-                <ul>
-                  {formErrors.map((error, index) => (
-                    <li key={index}>{error}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              
+              <FormErrors errors={formErrors}></FormErrors>
+              
             <Form.Group controlId="productName">
               <FloatingLabel
                 controlId="floatingInput"

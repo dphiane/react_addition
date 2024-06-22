@@ -8,7 +8,8 @@ import { fetchInvoices } from "api";
 import InvoiceForm from "./invoiceForm";
 import { InvoiceInterface } from "types";
 import Loader from "../../loader";
-import {formatDate,formatTime} from "utils/formatDate";
+import { formatDate, formatTime } from "utils/formatDate";
+import Pagination from "components/pagination";
 
 // @ts-ignore
 registerLocale("fr", fr);
@@ -23,7 +24,7 @@ const Invoices = () => {
     const [ currentPage, setCurrentPage ] = useState(1);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    
+
     useEffect(() => {
         getInvoices();
     }, []);
@@ -36,7 +37,7 @@ const Invoices = () => {
         setLoading(true);
         try {
             const response = await fetchInvoices();
-            setInvoices(response['hydra:member'].reverse());
+            setInvoices(response[ 'hydra:member' ].reverse());
         } catch (error) {
             console.error('Erreur lors de la récupération des factures', error);
             setErrors('Une erreur s\'est produite lors du chargement des factures');
@@ -108,7 +109,7 @@ const Invoices = () => {
                         {currentItems.map(invoice => {
                             const invoiceDate = new Date(invoice.date);
                             const formattedDate = formatDate(invoiceDate)
-                            const formattedTime =formatTime(invoiceDate);
+                            const formattedTime = formatTime(invoiceDate);
 
                             return (
                                 <tr key={invoice.id}>
@@ -130,17 +131,12 @@ const Invoices = () => {
                 <div className="d-flex justify-content-center position-relative">
                     <Link to={"/"}><button className="btn btn-secondary position-absolute start-0 ms-2">Retour</button></Link>
 
-                    {filteredInvoices.length > itemsPerPage && (
-                        <ul className="pagination">
-                            {Array.from({ length: Math.ceil(filteredInvoices.length / itemsPerPage) }, (_, index) => (
-                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                    <button onClick={() => paginate(index + 1)} className="page-link">
-                                        {index + 1}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                    <Pagination
+                        itemsPerPage={itemsPerPage}
+                        totalItems={invoices.length}
+                        currentPage={currentPage}
+                        paginate={paginate}
+                    />
                 </div>
             </div>
 

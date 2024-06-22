@@ -82,3 +82,20 @@ export type Action =
   | { type: 'FETCH_INVOICES_FAILURE'; payload: string }
   | { type: 'CALCULATE_TOTALS'; payload: InvoiceInterface[] }
   | { type: 'SET_PAYMENTS_TOTALS'; payload: PaymentMethodTotal[] };
+
+  export interface InvoiceData {
+    products: ProductInvoiceData[];
+    tva: number;
+    total: number;
+    payments: PaymentInvoiceData[];
+  }
+
+  interface ProductInvoiceData {
+    id: number;
+    quantity: number;
+  }
+  
+  interface PaymentInvoiceData {
+    amount: number;
+    paymentMethod: string;
+  }

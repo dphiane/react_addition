@@ -1,14 +1,15 @@
 import axios from 'axios';
-import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface } from 'types';
+import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface, InvoiceProducts, InvoiceData } from 'types';
 
-const API_URL = 'https://localhost:8000/api';
-const API_URL_FORGOT_PASSWORD= 'https://localhost:8000/forgot_password/';
+export const API_URL = 'https://localhost:8000/api';
+const API_URL_FORGOT_PASSWORD = 'https://localhost:8000/forgot_password/';
+const URL ='https://localhost:8000';
 
 export const fetchInvoices = async () => {
-      const response = await axios.get(`${API_URL}/invoices`);
-      return response.data;
+  const response = await axios.get(`${API_URL}/invoices`);
+  return response.data;
 };
-export const fetchInvoiceByID = async (id:number) => {
+export const fetchInvoiceByID = async (id: number) => {
   const response = await axios.get(`${API_URL}/invoices/${id}`);
   return response.data;
 };
@@ -19,35 +20,36 @@ export const register = async (email: string, password: string) => {
   }
   return response.data;
 }
-export const forgotPassword = async (token: string , password:string)=>{
+export const forgotPassword = async (token: string, password: string) => {
   const response = await axios.post(`${API_URL_FORGOT_PASSWORD}${token}`, {
-    password:password,
-});
-return response;
+    password: password,
+  });
+  return response;
 }
 
 export const resetPasswordRequest = async (email: string) => {
-    const response = await axios.post(`${API_URL_FORGOT_PASSWORD}`, { email },{
-      headers: {
-        'Content-Type': 'application/json',
-      }})
+  const response = await axios.post(`${API_URL_FORGOT_PASSWORD}`, { email }, {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
 
-    return response.data;
+  return response.data;
 }
 
 export const changePassword = async (email: string, currentPassword: string, newPassword: string, token: string) => {
-    const response = await axios.post(`${API_URL}/change_password`, {
-      email: email,
-      currentPassword: currentPassword,
-      newPassword: newPassword,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+  const response = await axios.post(`${API_URL}/change_password`, {
+    email: email,
+    currentPassword: currentPassword,
+    newPassword: newPassword,
+  }, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
-    return response.data; 
+  return response.data;
 }
 
 export const login = async (email: string, password: string) => {
@@ -79,6 +81,16 @@ export const fetchProducts = async (): Promise<ProductsInterface[]> => {
   return response.data[ "hydra:member" ];
 };
 
+export const fetchInvoiceProducts = async (invoiceProducts: InvoiceProducts[]) => {
+  const productsData = await Promise.all(
+    invoiceProducts.map(async (invoiceProduct) => {
+      const response = await axios.get(`${URL}${invoiceProduct.product[ "@id" ]}`);
+      return { ...response.data, quantity: invoiceProduct.quantity };
+    })
+  );
+  return productsData;
+}
+
 export const deleteProduct = async (productId: number): Promise<void> => {
   await axios.delete(`${API_URL}/products/${productId}`);
 };
@@ -102,7 +114,7 @@ export const fetchTvas = async (): Promise<TvaInterface[]> => {
   return response.data[ "hydra:member" ];
 };
 
-export const updateTva = async (updatedTva:number, tvaToEditId:number):Promise<TvaInterface>=>{
+export const updateTva = async (updatedTva: number, tvaToEditId: number): Promise<TvaInterface> => {
   const response = await axios.put(
     `${API_URL}/tvas/${tvaToEditId}`,
     { tva: updatedTva },
@@ -111,11 +123,11 @@ export const updateTva = async (updatedTva:number, tvaToEditId:number):Promise<T
   return response.data;
 }
 
-export const deleteTva = async (tvaID:number): Promise<void> =>{
+export const deleteTva = async (tvaID: number): Promise<void> => {
   await axios.delete(`${API_URL}/tvas/${tvaID}`);
 }
 
-export const addTva = async(newTva:number):Promise<TvaInterface> => {
+export const addTva = async (newTva: number): Promise<TvaInterface> => {
   const response = await axios.post(
     `${API_URL}/tvas`,
     { tva: newTva },
@@ -176,7 +188,7 @@ export const fetchPaymentsByIri = async (paymentsIRI: string[]): Promise<Payment
   try {
     const paymentsData = await Promise.all(
       paymentsIRI.map(async (iri) => {
-        const response = await axios.get(`https://localhost:8000${iri}`);
+        const response = await axios.get(`${URL}${iri}`);
         return response.data;
       })
     );
@@ -186,3 +198,41 @@ export const fetchPaymentsByIri = async (paymentsIRI: string[]): Promise<Payment
     return [];
   }
 }
+
+export const deleteMarkedPayments = async (paymentIds: number[]) => {
+  await Promise.all(
+    paymentIds.map(async (id) => {
+      await axios.delete(`${API_URL}/payments/${id}`, {
+        headers: {
+          'Content-Type': 'application/ld+json',
+        },
+      });
+    })
+  );
+}
+
+export const addNewPayments= async (newPayments:PaymentsInterface[])=>{
+ await Promise.all(
+    newPayments.map(async (payment) => {
+      await axios.post(`${API_URL}/payments`, payment, {
+        headers: {
+          'Content-Type': 'application/ld+json'
+        }
+      });
+    })
+  );
+}
+
+export const getMultipleProducts = async (productIds: number[])=>{
+ const response = await axios.get(`${API_URL}/multiple`, {
+    params: {
+      ids: productIds.join(',')
+    }
+  });
+  return response;
+
+}
+
+export const createInvoice = async (invoiceData: InvoiceData)=> {
+  await axios.post(`${API_URL}/create_invoice`, invoiceData);
+};

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { ProductsInterface, TvaInterface,CategoryInterface, CartItem } from 'types';
 import { fetchTvas, fetchProducts, fetchCategories } from 'api';
+import Loader from './loader';
 
 interface CategoryProps {
   addToCart: (name: string, quantity: number, price: number, tva: number, id: number) => void;
@@ -117,15 +118,7 @@ const Categories: React.FC<CategoryProps> = ({ addToCart, cart }) => {
               <Button key={index} className='m-1 btn-select-product' variant="primary" onClick={() => handleProductSelection(product)}>{product.name}</Button>
             ))}
           </div>
-          {
-            loading && (
-              <div className="d-flex justify-content-center align-items-center my-4">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Chargement</span>
-                </div>
-              </div>
-            )
-          }
+            <Loader loading={loading}></Loader>
           {totalPages > 1 && (
             <div className='d-flex justify-content-center m-2'>
               <ul className="pagination">

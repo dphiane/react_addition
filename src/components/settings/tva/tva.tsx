@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import TvaForm from "./tvaForm";
@@ -9,6 +8,7 @@ import Deleted from "./modals/deleted";
 import AddedOrModified from "./modals/addedOrModified";
 import { TvaInterface } from "types";
 import { deleteTva, fetchTvas,updateTva,addTva } from "api";
+import Pagination from "components/pagination";
 
 const Tva= () => {
   const [ tvas, setTvas ] = useState<TvaInterface[]>([]);
@@ -155,17 +155,12 @@ const Tva= () => {
       <nav>
         <div className="d-flex justify-content-between ms-2 me-2">
           <Link to={"/"}><button className="btn btn-secondary">Retour</button></Link>
-          {tvas.length > itemsPerPage && (
-            <ul className="pagination">
-              {Array.from({ length: Math.ceil(tvas.length / itemsPerPage) }, (_, index) => (
-                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                  <button onClick={() => paginate(index + 1)} className="page-link">
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <Pagination 
+            itemsPerPage={itemsPerPage} 
+            totalItems={tvas.length} 
+            currentPage={currentPage} 
+            paginate={paginate} 
+          />
           <Button onClick={() =>setModals({...modals,form:true})}>Ajouter une TVA</Button>
         </div>
       </nav>
