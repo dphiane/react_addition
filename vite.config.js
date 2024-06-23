@@ -11,5 +11,8 @@ export default defineConfig({
       'types': '/src/types.ts',
       'components':'/src/components'
     }
-  }
+  },
+  build: {
+    sourcemap: false,
+  },
 })
