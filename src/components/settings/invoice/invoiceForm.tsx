@@ -175,7 +175,7 @@ const InvoiceForm: React.FC<InvoiceProps> = ({ editInvoice, resetForm, refreshIn
     setLoading(true);
     try {
       await axios.delete(`${API_URL}/invoices/${invoiceId}`);
-      setModals({ ...modals, deleted: true, form: false });
+      setModals({ ...modals, deleted: true, form: false ,confirmDelete:false});
     } catch {
       setFormErrors(previousError => [...previousError, 'Erreur lors de la suppression de la facture']);
     } finally {

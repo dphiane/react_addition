@@ -48,7 +48,7 @@ const RegisterForm: React.FC = () => {
             <Form.Label>Adresse Email</Form.Label>
             <Form.Control
               type="email"
-              placeholder="Ajouter votre email"
+              placeholder="Votre email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
