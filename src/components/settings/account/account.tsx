@@ -51,11 +51,18 @@ const Account = () => {
             setError('Veuillez remplir les champs.')
             return;
         }
+        if(newPassword.length < 6 ){
+            setError("Votre mot de passe doit faire au minimum 6 caractères.")
+            return;
+        }
+        if(newPassword.length > 50 ){
+            setError("Votre mot de passe doit faire au maximum 50 caractères.")
+            return;
+        }
         if (newPassword !== confirmNewPassword) {
             setError("Les nouveaux mots de passe ne correspondent pas.");
             return;
         }
-
         try {
             const token = getCurrentUser();
             if (token) {
@@ -70,7 +77,7 @@ const Account = () => {
             }
         } catch (error) {
             console.error('Erreur lors du changement de mot de passe', error);
-            setError('Erreur lors du changement de mot de passe');
+            setError('L\'ancien mot de passe est incorrect');
         }
     };
 

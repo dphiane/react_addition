@@ -22,8 +22,8 @@ const SeatingPlan = () => {
     };
 
     return (
-        <div className='bg-dark'>
-            <h1 className='text-center m-5'>Selectionner une table</h1>
+        <div className='bg-dark vh-100'>
+            <h1 className='text-center p-5'>Selectionner une table</h1>
             <div className='d-flex justify-content-center flex-wrap'>
                 {tables.tables.map((table, index) => (
                     <button

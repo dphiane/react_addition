@@ -13,8 +13,14 @@ export const fetchInvoiceByID = async (id: number) => {
   const response = await axios.get(`${API_URL}/invoices/${id}`);
   return response.data;
 };
+
 export const register = async (email: string, password: string) => {
-  const response = await axios.post(`${API_URL}/register`, { email, password });
+  const response = await axios.post(`${API_URL}/register`, { email, password },{
+    headers: {
+      'Content-Type': 'application/ld+json',
+    }
+  }
+  );
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
   }
@@ -44,11 +50,10 @@ export const changePassword = async (email: string, currentPassword: string, new
     newPassword: newPassword,
   }, {
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`,
     },
   });
-
   return response.data;
 }
 
@@ -230,9 +235,12 @@ export const getMultipleProducts = async (productIds: number[])=>{
     }
   });
   return response;
-
 }
 
 export const createInvoice = async (invoiceData: InvoiceData)=> {
-  await axios.post(`${API_URL}/create_invoice`, invoiceData);
+  await axios.post(`${API_URL}/create_invoice`, invoiceData,{
+    headers: {
+      'Content-Type': 'application/ld+json'
+    }
+  });
 };
