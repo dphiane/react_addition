@@ -41,7 +41,9 @@ const RegisterForm: React.FC = () => {
 
   return (
     <div className='d-flex justify-content-center mt-3 flex-column align-items-center'>
-      <h2 className='text-light mb-2'>Créer un nouvelle utilisateur</h2>
+      <h2 className='text-light mb-2 text-center'>Créer un nouvelle utilisateur</h2>
+      <p className='text-danger m-2 text-center'>J'ai créé une page de création de compte uniquement pour tester l'application.</p>
+      <p className='text-danger m-2'> Cette page n'est pas destinée à être utilisée dans la version finale, car l'application devrait être un service SaaS.</p>
       <div className='card-form w-100'>
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3 text-light">

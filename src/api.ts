@@ -1,9 +1,14 @@
 import axios from 'axios';
 import { ProductsInterface, TvaInterface, CategoryInterface, InvoiceInterface, PaymentsInterface, InvoiceProducts, InvoiceData } from 'types';
 
+//dev
 export const API_URL = 'https://localhost:8000/api';
 const API_URL_FORGOT_PASSWORD = 'https://localhost:8000/forgot_password/';
 const URL ='https://localhost:8000';
+// prod
+/* export const API_URL = 'https://api.addition-dphiane.fr/api';
+const API_URL_FORGOT_PASSWORD = 'https://api.addition-dphiane.fr/forgot_password/';
+const URL ='https://api.addition-dphiane.fr'; */
 
 export const fetchInvoices = async () => {
   const response = await axios.get(`${API_URL}/invoices`);
