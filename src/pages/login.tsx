@@ -96,14 +96,20 @@ const Login: React.FC = () => {
               </div>
               {error && <p className="text-danger">{error}</p>}
               {<Loader loading={loading}></Loader>}
+              <div className="d-flex align-items-center">
+
               <button type="submit" className="btn btn-primary">
                 Se connecter
               </button>
-              <small className="ms-2 text-light">
-                <button type="button" className="btn btn-link text-light" onClick={toggleForm}>
+              <div className="d-flex flex-column ms-3">
+                <button type="button" className="btn btn-link fw-light text-light p-0" onClick={toggleForm}>
                   Mot de passe oublié ?
                 </button>
-              </small>
+                    <Link className="text-light fw-light text-decoration-underline" to={"/register"}>
+                    Créer un compte
+                    </Link>
+              </div>
+              </div>
             </form>
           </div>
         )}
