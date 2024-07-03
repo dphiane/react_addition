@@ -53,6 +53,7 @@ const RegisterForm: React.FC = () => {
               placeholder="Votre email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </Form.Group>
 
