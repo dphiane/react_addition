@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import TableSelection from './tableSelection';
-import { calculateTotalPrice, calculateTotalTVA } from '../utils/cartUtils';
+import { calculatePrice, calculateTotalPrice, calculateTotalTVA } from "../utils/cart";
 import ReactToPrint from 'react-to-print';
 import PrintCart from './printCart';
 import CartModal from './modals/cartModal';
@@ -78,7 +78,7 @@ const Carts: React.FC<CartProps> = ({ cart, initialQuantity, updateQuantity, onT
             {Object.entries(cart).map(([product, { quantity, price }]) => (
               <li className="edit-product position-relative m-1" key={product} onClick={() => handleOpenModal(product)}>
                 <span className='span-text'>{quantity} x {product} </span>
-                <span className="position-absolute end-0 me-2">{price * quantity} €</span>
+                <span className="position-absolute end-0 me-2">{calculatePrice(price , quantity)} €</span>
               </li>
             ))}
           </ul>

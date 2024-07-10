@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { calculateTotalPrice, calculateTotalTVA } from "../utils/cart";
+import { calculatePrice, calculateTotalPrice, calculateTotalTVA } from "../utils/cart";
 import { ProductsInterface } from '../types';
 import { getMultipleProducts } from "api";
 
@@ -19,7 +19,7 @@ interface paymentProps {
   totalCart: (totalCart: number) => void;
   payments: Payment[];
   onDeletePayment: (index: number) => void;
-  onProductsFetched: (products: (ProductsInterface & { quantity: number; tva: number })[]) => void; // Add this line
+  onProductsFetched: (products: (ProductsInterface & { quantity: number; tva: number })[]) => void;
 }
 
 const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onProductsFetched }: paymentProps) => {
@@ -83,7 +83,8 @@ const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onPr
                 {products.map(({ id, name, price, quantity }) => (
                   <li className="edit-product position-relative m-1" key={id}>
                     <span className="span-text">{quantity} x {name}</span>
-                    <span className="position-absolute end-0 me-2">{price * quantity} €</span>
+                    {/* <span className="position-absolute end-0 me-2">{(price * quantity).toFixed(2)} €</span> */}
+              <span className="position-absolute end-0 me-2">{calculatePrice(price , quantity)} €</span>
                   </li>
                 ))}
               </ul>
@@ -98,7 +99,7 @@ const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onPr
               Total HT <span className="position-absolute end-0 me-2">{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span>
             </p>
             <p className="fw-bold position-relative m-1">
-              Total <span className="position-absolute end-0 me-2">{calculateTotalPrice(cart)} €</span>
+              Total <span className="position-absolute end-0 me-2">{calculateTotalPrice(cart).toFixed(2)} €</span>
             </p>
             <ul>
               {payments.map((payment, index) => (

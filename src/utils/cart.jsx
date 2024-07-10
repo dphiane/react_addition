@@ -13,3 +13,8 @@ export function calculateTotalPrice (cart){
     });
     return parseFloat(total.toFixed(2));
   };
+
+ export function calculatePrice(price , quantity){
+  const total = price * quantity;
+  return parseFloat(total.toFixed(2));
+ }
