@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { calculatePrice, calculateTotalPrice, calculateTotalTVA } from "../utils/cart";
 import { ProductsInterface } from '../types';
 import { getMultipleProducts } from "api";
+import Loader from "./loader";
 
 interface CartItem {
   quantity: number;
@@ -25,25 +26,34 @@ interface paymentProps {
 const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onProductsFetched }: paymentProps) => {
   const selectTable = localStorage.getItem("selectTable");
   const [products, setProducts] = useState<(ProductsInterface & { quantity: number; tva: number })[]>([]);
-  let cart: { [key: string]: CartItem } = {};
+  const [cart, setCart] = useState<{ [key: string]: CartItem }>({});
+  const [ids, setIds] = useState<number[]>([]);
+  const [loading,setLoading]= useState<boolean>(false);
 
   useEffect(() => {
     totalCart(calculateTotalPrice(products));
-  });
+  }, [products, totalCart]);
 
   useEffect(() => {
-    fetchProductDetails(ids);
-  }, []);
-
-  if (selectTable) {
-    const cartData = localStorage.getItem(selectTable);
-    if (cartData) {
-      cart = JSON.parse(cartData);
+    if (ids.length > 0) {
+      fetchProductDetails(ids);
     }
-  }
-  const ids = Object.entries(cart).map(([product, { id }]) => id);
+  }, [ids]);
+
+  useEffect(() => {
+    if (selectTable) {
+      const cartData = localStorage.getItem(selectTable);
+      if (cartData) {
+        const parsedCart = JSON.parse(cartData) as { [key: string]: CartItem };
+        setCart(parsedCart);
+        const productIds = Object.entries(parsedCart).map(([_, { id }]) => id);
+        setIds(productIds);
+      }
+    }
+  }, [selectTable]);
 
   const fetchProductDetails = async (productIds: number[]) => {
+    setLoading(true);
     try {
       const response = await getMultipleProducts(productIds);
       const productsWithQuantityAndTVA = response.data.map((product: ProductsInterface) => {
@@ -58,37 +68,44 @@ const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onPr
       onProductsFetched(productsWithQuantityAndTVA);
     } catch (error) {
       console.error("Error fetching product details", error);
+    }finally{
+      setLoading(false);
     }
   };
 
   const handleDelete = (index: number) => {
     onDeletePayment(index);
   };
+  const totalQuantity = Object.values(cart).reduce((acc, { quantity }) => acc + quantity, 0);
 
   return (
     <>
       {selectTable && Object.keys(cart).length > 0 ? (
+
         <div className="carts d-flex flex-column flex-grow-1 justify-content-between border-end bg-dark">
           <div>
             <div className="d-flex flex-column">
               <h2 className="fw-bold text-center mb-0">Table {parseInt(selectTable.split("_")[1])}</h2>
               <p className="text-center m-0">
-                {Object.keys(cart).length} article
-                {Object.keys(cart).length > 1 ? "s" : ""}
+              {totalQuantity} article
+              {totalQuantity > 1 ? "s" : ""}
               </p>
               <hr />
             </div>
-            <div>
-              <ul>
-                {products.map(({ id, name, price, quantity }) => (
-                  <li className="edit-product position-relative m-1" key={id}>
-                    <span className="span-text">{quantity} x {name}</span>
-                    {/* <span className="position-absolute end-0 me-2">{(price * quantity).toFixed(2)} €</span> */}
-              <span className="position-absolute end-0 me-2">{calculatePrice(price , quantity)} €</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {loading ? (
+              <Loader loading={loading}></Loader>
+            ) : (
+              <div>
+                <ul>
+                  {products.map(({ id, name, price, quantity }) => (
+                    <li className="edit-product position-relative m-1" key={id}>
+                      <span className="span-text">{quantity} x {name}</span>
+                      <span className="position-absolute end-0 me-2">{calculatePrice(price,quantity)} €</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <div>
             <hr />
@@ -99,7 +116,7 @@ const CartForPayment = ({ remainder, totalCart, payments, onDeletePayment , onPr
               Total HT <span className="position-absolute end-0 me-2">{(calculateTotalPrice(cart) - calculateTotalTVA(cart)).toFixed(2)} €</span>
             </p>
             <p className="fw-bold position-relative m-1">
-              Total <span className="position-absolute end-0 me-2">{calculateTotalPrice(cart).toFixed(2)} €</span>
+              Total <span className="position-absolute end-0 me-2">{calculateTotalPrice(cart)} €</span>
             </p>
             <ul>
               {payments.map((payment, index) => (

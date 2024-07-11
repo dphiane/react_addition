@@ -30,7 +30,6 @@ const ResetPasswordPage: React.FC = () => {
 
         try {
             const response = await forgotPassword(token!, password)
-            console.log(response)
             setModal(true);
         } catch (error) {
             setError('Une erreur est survenue lors de la réinitialisation du mot de passe.');

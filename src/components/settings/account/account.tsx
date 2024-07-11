@@ -68,7 +68,6 @@ const Account = () => {
             if (token) {
                 const decoded = jwtDecode<DecodedToken>(token);
                 const response = await changePassword(decoded.username, password, newPassword, token);
-                console.log(response)
                 setError('');
                 setPassword('');
                 setNewPassword('')

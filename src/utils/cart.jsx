@@ -1,9 +1,9 @@
 export function calculateTotalPrice (cart){
-    let totalPrice = 0;
+    let total = 0;
     Object.values(cart).forEach(item => {
-      totalPrice += item.quantity * item.price;
+      total += item.quantity * item.price;
     });
-    return totalPrice;
+    return parseFloat(total.toFixed(2));
   };
 
  export function calculateTotalTVA(cart){
